@@ -72,4 +72,18 @@ export class YouTubePlayer {
       this.player.seekTo(seconds, true);
     }
   }
+
+  public loadVideo(videoId: string, startTime: number) {
+    this.videoId = videoId;
+    this.startTime = startTime;
+    if (this.player && typeof this.player.loadVideoById === 'function') {
+      this.player.loadVideoById({
+        videoId: this.videoId,
+        startSeconds: this.startTime,
+      });
+    } else {
+      // If player is not ready, re-initialize it
+      this.initPlayer(this.player.getIframe().id);
+    }
+  }
 }

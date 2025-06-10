@@ -23,14 +23,19 @@ export function initializeMap(elementId: string): L.Map {
   }).addTo(map);
 
   // Add station markers
-  stationTimes.forEach(station => {
+  let player: YouTubePlayer | null = null;
+
+  (stationTimes as StationMapping[]).forEach(station => {
     const marker = L.marker([station.lat, station.lon])
       .addTo(map)
       .bindPopup(station.stationName);
 
     marker.on('click', () => {
-      // Assuming there's a div with id 'youtube-player' in App.tsx
-      new YouTubePlayer('youtube-player', station.videoId, station.startTime);
+      if (!player) {
+        player = new YouTubePlayer('youtube-player', station.videoId, station.startTime);
+      } else {
+        player.loadVideo(station.videoId, station.startTime);
+      }
     });
   });
 
