@@ -1,106 +1,83 @@
-# 🚆 鉄道前面展望 × 地図連携Webアプリ 要件定義書
+# Railway Image Map
 
-## 🎯 概要
+鉄道路線の駅と動画をマッピングするウェブアプリケーションです。
 
-本アプリは、**前面展望YouTube動画**と**地図上の鉄道路線情報**を連携させ、ユーザーが地図上で路線を辿りながら、動画と連動した体験を提供するWebアプリです。
+## 機能
 
-- 地図上に路線と駅を表示
-- 駅クリックで該当動画を再生
-- TypeScriptで構築し、保守性・拡張性を重視
+- 地図上に駅を表示し、クリックすると対応する動画を再生
+- 新しい駅と動画のマッピングを投稿
+- 投稿されたマッピングの一覧表示と管理
+- ユーザー認証（ログイン/登録）
 
----
+## 技術スタック
 
-## 🧩 技術スタック
+- フロントエンド: React + Vite + TypeScript
+- 地図: Leaflet.js
+- 動画API: YouTube iframe API
+- データ保存: Supabase (PostgreSQL, REST, Auth)
 
-| 項目 | 使用技術・サービス |
-|------|--------------------|
-| 言語 | TypeScript |
-| UIフレームワーク | React |
-| 地図表示 | [Leaflet](https://leafletjs.com/) |
-| 地図タイル | OpenStreetMap |
-| 路線データ | OSMのRelation / Node（GeoJSON変換） |
-| 動画再生 | YouTube iframe API |
-| 配信 | GitHub Pages / Vercel / Netlify（無料ホスティング） |
+## セットアップ
 
----
+### 前提条件
 
-## 📁 データ構造
+- Node.js と npm がインストールされていること
+- Supabaseアカウントを持っていること
 
-### 1. 鉄道路線データ
+### インストール
 
-```json
-[
-    {
-        "lineName": "JR横須賀線",
-        "lineNameKana": "ヨコスカセン",
-        "lineCd": 1110100,
-        "stations": [
-            {
-                "stationCd": 1110121,
-                "stationName": "渋谷",
-                "stationNameKana": "シブヤ",
-                "lat": 41.773709,
-                "lon": 140.726413
-            },
-            {
-                "stationCd": 1110101,
-                "stationName": "表参道",
-                "stationNameKana": "オモテサンドウ",
-                "lat": 41.776835,
-                "lon": 140.729262
-            }
-        ]
-    }
-]
+1. リポジトリをクローン
+
+```bash
+git clone <repository-url>
+cd railway-image-map
 ```
 
-### 2. 駅 ↔ 動画再生位置マッピングデータ（JSON）
+2. 依存パッケージをインストール
 
-```json
-[
-  {
-    "stationCd": 1110121,
-    "stationName": "渋谷",
-    "videoId": "xxxxxxxxxxx",
-    "startTime": 0
-  },
-  {
-    "stationCd": 1110101,
-    "stationName": "表参道",
-    "videoId": "xxxxxxxxxxx",
-    "startTime": 75
-  }
-]
+```bash
+npm install
 ```
 
-## 機能一覧
-### 地図表示
-Leafletを用いて、OSMタイルと鉄道路線データを表示
+3. 環境変数の設定
 
-駅ごとにマーカー表示
+`.env.example` ファイルを `.env` にコピーし、Supabaseの接続情報を設定します。
 
-### 動画連携
-駅マーカークリックで、該当YouTube動画を指定の秒数から再生
+```
+VITE_SUPABASE_URL=your_supabase_url_here
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+```
 
-YouTube iframe API を使用し、時間を取得
+4. Supabaseのセットアップ
 
-## ディレクトリ構成（例）
-project-root/
-├── public/
-│   └── index.html
-├── src/
-│   ├── components/
-│   │   └── MapView.ts
-│   ├── data/
-│   │   ├── route.geojson
-│   │   └── station-times.json
-│   ├── utils/
-│   │   └── geo.ts
-│   ├── youtube/
-│   │   └── YouTubePlayer.ts
-│   └── main.ts
-├── types/
-│   └── StationMapping.ts
-├── vite.config.ts
-├── tsconfig.json
-└── package.json
+Supabaseダッシュボードで以下のテーブルを作成します：
+
+```sql
+CREATE TABLE station_mappings (
+  id SERIAL PRIMARY KEY,
+  station_cd INTEGER NOT NULL,
+  station_name TEXT NOT NULL,
+  video_id TEXT NOT NULL,
+  start_time INTEGER NOT NULL,
+  lat FLOAT NOT NULL,
+  lon FLOAT NOT NULL,
+  user_id UUID REFERENCES auth.users,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+5. 開発サーバーの起動
+
+```bash
+npm run dev
+```
+
+## 使い方
+
+1. ログインまたはアカウント登録を行います
+2. 「投稿」ページから新しい駅と動画のマッピングを追加します
+3. 「地図」ページで駅をクリックすると、対応する動画が再生されます
+4. 「一覧」ページで投稿されたマッピングを管理できます
+
+## ライセンス
+
+MIT
