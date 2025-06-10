@@ -1,0 +1,18 @@
+[
+  {
+    "stationCd": 1110121,
+    "stationName": "渋谷",
+    "videoId": "xxxxxxxxxxx",
+    "startTime": 0,
+    "lat": 35.658034,
+    "lon": 139.701636
+  },
+  {
+    "stationCd": 1110101,
+    "stationName": "表参道",
+    "videoId": "xxxxxxxxxxx",
+    "startTime": 75,
+    "lat": 35.66627,
+    "lon": 139.71579
+  }
+]
