@@ -22,9 +22,9 @@ export class YouTubePlayer {
         videoId: this.videoId,
         playerVars: {
           autoplay: 1,
-          controls: 1,
-          start: this.startTime,
+          controls: 1
         },
+        startSeconds: this.startTime,
         events: {
           onReady: this.onPlayerReady,
           onStateChange: this.onPlayerStateChange,
@@ -37,7 +37,7 @@ export class YouTubePlayer {
       firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
 
       window.onYouTubeIframeAPIReady = () => {
-        this.player = new window.YT.Player(elementId, {
+        this.player = new window.YT!.Player(elementId, {
           videoId: this.videoId,
           playerVars: {
             autoplay: 1,

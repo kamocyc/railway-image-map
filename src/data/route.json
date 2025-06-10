@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "lineName": "JR東北本線(黒磯～利府・盛岡)",
+        "lineNameKana": "トウホクホンセン",
+        "lineCd": 11231
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            140.885986,
+            38.226797
+          ],
+          [
+            140.883436,
+            38.21711
+          ]
+        ]
+      }
+    }
+  ]
+}

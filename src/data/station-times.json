@@ -1,18 +1,18 @@
 [
   {
-    "stationCd": 1110121,
-    "stationName": "渋谷",
-    "videoId": "xxxxxxxxxxx",
+    "stationCd": 1123142,
+    "stationName": "長町",
+    "videoId": "zBtJUyfPh5E",
     "startTime": 0,
-    "lat": 35.658034,
-    "lon": 139.701636
+    "lat": 38.226797,
+    "lon": 140.885986
   },
   {
-    "stationCd": 1110101,
-    "stationName": "表参道",
-    "videoId": "xxxxxxxxxxx",
+    "stationCd": 1123141,
+    "stationName": "太子堂",
+    "videoId": "zBtJUyfPh5E",
     "startTime": 75,
-    "lat": 35.66627,
-    "lon": 139.71579
+    "lat": 38.21711,
+    "lon": 140.883436
   }
 ]
