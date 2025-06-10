@@ -1,11 +1,1 @@
-export interface StationMapping {
-  id?: number; // Supabaseで自動生成されるID
-  station_cd: string;
-  station_name: string;
-  video_id: string;
-  start_time: number;
-  lat: number;
-  lon: number;
-  created_at?: string; // 作成日時
-  user_id?: string; // 投稿者ID
-}
+export interface StationMapping { id: number; stationName: string; stationCd: number; videoId: string; startTime: number; lat: number; lon: number; userId: string; lineName: string; lineCd: number, createdAt?: string }

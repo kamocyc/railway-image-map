@@ -1,8 +1,12 @@
+import { StationMapping } from "./StationMapping";
+
 export interface Report {
-  id?: number;
-  mapping_id: number;
-  reporter_id: string;
+  id: string;
+  mappingId: number;
+  reporterId: string;
   reason: string;
   status: 'pending' | 'reviewed' | 'resolved' | 'rejected';
-  created_at?: string;
+  createdAt?: string;
+  stationMapping?: StationMapping;
+  reporterEmail?: string;
 }

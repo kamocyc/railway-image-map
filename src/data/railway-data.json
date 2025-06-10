@@ -1,0 +1,23 @@
+[
+  {
+    "videoId": "zBtJUyfPh5E",
+    "lineName": "JR東北本線(黒磯～利府・盛岡)",
+    "lineCd": 11231,
+    "stations": [
+      {
+        "stationCd": 1123142,
+        "stationName": "長町",
+        "startTime": 0,
+        "lat": 38.226797,
+        "lon": 140.885986
+      },
+      {
+        "stationCd": 1123141,
+        "stationName": "太子堂",
+        "startTime": 75,
+        "lat": 38.21711,
+        "lon": 140.883436
+      }
+    ]
+  }
+]

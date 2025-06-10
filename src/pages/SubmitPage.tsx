@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addStationMapping } from '../lib/supabase';
+import { addRailwayData } from '../lib/supabase';
+import { RailwayData } from '../types/RailwayData';
 import { useAuth } from '../lib/auth';
 
 function SubmitPage() {
@@ -16,7 +17,9 @@ function SubmitPage() {
     videoId: '',
     startTime: '0',
     lat: '',
-    lon: ''
+    lon: '',
+    lineName: '',  // 追加: 路線名
+    lineCd: ''     // 追加: 路線コード
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,12 +39,13 @@ function SubmitPage() {
       const startTime = parseInt(formData.startTime, 10);
       const lat = parseFloat(formData.lat);
       const lon = parseFloat(formData.lon);
+      const lineCd = parseInt(formData.lineCd, 10);
 
-      if (isNaN(stationCd) || isNaN(startTime) || isNaN(lat) || isNaN(lon)) {
+      if (isNaN(stationCd) || isNaN(startTime) || isNaN(lat) || isNaN(lon) || isNaN(lineCd)) {
         throw new Error('数値フィールドに無効な値が入力されています');
       }
 
-      if (!formData.stationName || !formData.videoId) {
+      if (!formData.stationName || !formData.videoId || !formData.lineName) {
         throw new Error('すべての必須フィールドを入力してください');
       }
 
@@ -50,17 +54,22 @@ function SubmitPage() {
         throw new Error('無効なYouTubeビデオIDです');
       }
 
-      const newMapping = {
-        station_cd: '' + stationCd,
-        station_name: formData.stationName,
-        video_id: formData.videoId,
-        start_time: startTime,
-        lat,
-        lon,
-        user_id: user?.id
+      const newMapping: RailwayData = {
+        videoId: formData.videoId,
+        lineName: formData.lineName,
+        lineCd: lineCd,
+        stations: [
+          {
+            stationCd: stationCd,
+            stationName: formData.stationName,
+            startTime: startTime,
+            lat: lat,
+            lon: lon,
+          },
+        ],
       };
 
-      const result = await addStationMapping(newMapping);
+      const result = await addRailwayData(newMapping);
 
       if (result) {
         setSuccess(true);
@@ -71,7 +80,9 @@ function SubmitPage() {
           videoId: '',
           startTime: '0',
           lat: '',
-          lon: ''
+          lon: '',
+          lineName: '',
+          lineCd: ''
         });
 
         // 3秒後に地図ページに遷移
@@ -119,6 +130,54 @@ function SubmitPage() {
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            YouTube ビデオID:
+            <input
+              type="text"
+              name="videoId"
+              value={formData.videoId}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '0.5rem' }}
+              placeholder="例: dQw4w9WgXcQ"
+              required
+            />
+          </label>
+          <small style={{ display: 'block', color: '#666' }}>
+            YouTubeの動画URLの「v=」の後の部分です (例: https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+          </small>
+        </div>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            路線名:
+            <input
+              type="text"
+              name="lineName"
+              value={formData.lineName}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '0.5rem' }}
+              placeholder="例: JR東北本線"
+              required
+            />
+          </label>
+        </div>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+            路線コード (数字):
+            <input
+              type="text"
+              name="lineCd"
+              value={formData.lineCd}
+              onChange={handleChange}
+              style={{ width: '100%', padding: '0.5rem' }}
+              placeholder="例: 11231"
+              required
+            />
+          </label>
+        </div>
+
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
             駅コード (数字):
             <input
               type="text"
@@ -143,24 +202,6 @@ function SubmitPage() {
               required
             />
           </label>
-        </div>
-
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-            YouTube ビデオID:
-            <input
-              type="text"
-              name="videoId"
-              value={formData.videoId}
-              onChange={handleChange}
-              style={{ width: '100%', padding: '0.5rem' }}
-              placeholder="例: dQw4w9WgXcQ"
-              required
-            />
-          </label>
-          <small style={{ display: 'block', color: '#666' }}>
-            YouTubeの動画URLの「v=」の後の部分です (例: https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-          </small>
         </div>
 
         <div style={{ marginBottom: '1rem' }}>

@@ -1,31 +1,49 @@
 import { useEffect, useRef } from 'react';
-import { initializeMap } from '../components/MapView';
-import { StationMapping } from '../types/StationMapping';
+import { initializeMapWithRailwayData } from '../components/MapView';
+import { RailwayData } from '../types/RailwayData';
 
 interface MapPageProps {
-  stationMappings: StationMapping[];
   loading: boolean;
+  railwayData: RailwayData[];
 }
 
-function MapPage({ stationMappings, loading }: MapPageProps) {
+function MapPage({ loading, railwayData }: MapPageProps) {
   const mapRef = useRef<L.Map | null>(null);
+  const mapInitializedRef = useRef<boolean>(false); // マップが初期化されたかどうかを追跡
 
+  // マップの初期化と更新
   useEffect(() => {
-    if (!loading && stationMappings.length > 0) {
-      // マップの初期化
-      mapRef.current = initializeMap('map', stationMappings);
+    // データがロード中の場合は何もしない
+    if (loading) return;
 
-      return () => {
-        if (mapRef.current) {
-          mapRef.current.remove();
-        }
-      };
+    // データが利用可能かチェック
+    const hasNewData = railwayData.length > 0;
+
+    if (!hasNewData) return; // 新しいデータがない場合は何もしない
+
+    // マップがすでに初期化されている場合は、既存のマップを削除
+    if (mapInitializedRef.current && mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
     }
-  }, [stationMappings, loading]);
+
+    mapRef.current = initializeMapWithRailwayData('map', railwayData);
+
+    mapInitializedRef.current = true;
+
+    // コンポーネントのアンマウント時にマップをクリーンアップ
+    return () => {
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+      mapInitializedRef.current = false;
+    };
+  }, [loading, railwayData]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {loading ? (
+      {(loading) ? (
         <div style={{ padding: '2rem', textAlign: 'center' }}>地図データを読み込み中...</div>
       ) : (
         <>

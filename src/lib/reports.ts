@@ -7,12 +7,12 @@ export async function createReport(report: Omit<Report, 'id' | 'created_at' | 's
     .from('reports')
     .insert([{ ...report, status: 'pending' }])
     .select();
-  
+
   if (error) {
     console.error('Error creating report:', error);
     return null;
   }
-  
+
   return data?.[0] as Report;
 }
 
@@ -25,27 +25,27 @@ export async function getReports() {
       station_mappings!inner(*)
     `)
     .order('created_at', { ascending: false });
-  
+
   if (error) {
     console.error('Error fetching reports:', error);
     return [];
   }
-  
+
   return data as (Report & { station_mappings: any })[];
 }
 
 // 通報のステータスを更新する（管理者用）
-export async function updateReportStatus(id: number, status: Report['status']) {
+export async function updateReportStatus(id: string, status: Report['status']) {
   const { data, error } = await supabase
     .from('reports')
     .update({ status })
     .eq('id', id)
     .select();
-  
+
   if (error) {
     console.error('Error updating report status:', error);
     return null;
   }
-  
+
   return data?.[0] as Report;
 }

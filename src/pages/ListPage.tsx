@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StationMapping } from '../types/StationMapping';
-import { deleteStationMapping } from '../lib/supabase';
+import { deleteRailwayData } from '../lib/supabase';
+import { RailwayData, Station } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
 import { useAuth } from '../lib/auth';
 
 interface ListPageProps {
-  stationMappings: StationMapping[];
+  railwayData: RailwayData[];
   loading: boolean;
 }
 
-function ListPage({ stationMappings, loading }: ListPageProps) {
+function ListPage({ railwayData, loading }: ListPageProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [deleteLoading, setDeleteLoading] = useState<number | null>(null);
@@ -27,7 +27,7 @@ function ListPage({ stationMappings, loading }: ListPageProps) {
       setError(null);
 
       try {
-        const success = await deleteStationMapping(id);
+        const success = await deleteRailwayData(id);
         if (!success) {
           throw new Error('削除に失敗しました');
         }
@@ -57,8 +57,8 @@ function ListPage({ stationMappings, loading }: ListPageProps) {
 
     try {
       const report = await createReport({
-        mapping_id: reportingId,
-        reporter_id: user.id,
+        mappingId: reportingId,
+        reporterId: user.id,
         reason: reportReason.trim()
       });
 
@@ -78,7 +78,7 @@ function ListPage({ stationMappings, loading }: ListPageProps) {
     return <div style={{ padding: '2rem', textAlign: 'center' }}>データを読み込み中...</div>;
   }
 
-  if (stationMappings.length === 0) {
+  if (railwayData.length === 0) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center' }}>
         <h2>マッピングがありません</h2>
@@ -216,25 +216,25 @@ function ListPage({ stationMappings, loading }: ListPageProps) {
             </tr>
           </thead>
           <tbody>
-            {stationMappings.map((station) => (
-              <tr key={station.id || station.station_cd} style={{ borderBottom: '1px solid #ddd' }}>
-                <td style={{ padding: '0.75rem' }}>{station.station_cd}</td>
-                <td style={{ padding: '0.75rem' }}>{station.station_name}</td>
+            {railwayData.flatMap((data) => data.stations.map((station: Station) => ({ ...station, videoId: data.videoId, lineName: data.lineName, lineCd: data.lineCd }))).map((station: Station & { videoId: string; lineName: string; lineCd: number }) => (
+              <tr key={station.id || station.stationCd} style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '0.75rem' }}>{station.stationCd}</td>
+                <td style={{ padding: '0.75rem' }}>{station.stationName}</td>
                 <td style={{ padding: '0.75rem' }}>
                   <a
-                    href={`https://www.youtube.com/watch?v=${station.video_id}&t=${station.start_time}`}
+                    href={`https://www.youtube.com/watch?v=${station.videoId}&t=${station.startTime}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {station.video_id}
+                    {station.videoId}
                   </a>
                 </td>
-                <td style={{ padding: '0.75rem' }}>{station.start_time}秒</td>
+                <td style={{ padding: '0.75rem' }}>{station.startTime}秒</td>
                 <td style={{ padding: '0.75rem' }}>{station.lat}</td>
                 <td style={{ padding: '0.75rem' }}>{station.lon}</td>
                 <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-                    {user && user.id === station.user_id && (
+                    {user && user.id === station.userId && (
                       <button
                         onClick={() => handleDelete(station.id)}
                         disabled={deleteLoading === station.id}

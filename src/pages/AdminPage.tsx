@@ -160,18 +160,19 @@ function AdminPage() {
       // 開発用のダミーデータ
       setReports([
         {
-          id: 1,
+          id: '1',
           mappingId: 1,
           reporterId: '1',
           reporterEmail: 'user1@example.com',
           reason: '不適切な内容です',
           status: 'pending',
           createdAt: '2023-01-01T00:00:00Z',
-          updatedAt: '2023-01-01T00:00:00Z',
           stationMapping: {
             id: 1,
             stationCd: 1123142,
             stationName: '長町',
+            lineName: '東北本線',
+            lineCd: 12345,
             videoId: 'zBtJUyfPh5E',
             startTime: 0,
             lat: 38.226797,
@@ -221,14 +222,16 @@ function AdminPage() {
       setUserMappings([
         {
           id: 1,
-          station_cd: 1123142,
-          station_name: '長町',
-          video_id: 'zBtJUyfPh5E',
-          start_time: 0,
+          stationCd: 1123142,
+          stationName: '長町',
+          lineName: '東北本線',
+          lineCd: 12345,
+          videoId: 'zBtJUyfPh5E',
+          startTime: 0,
           lat: 38.226797,
           lon: 140.885986,
-          user_id: userId,
-          created_at: '2023-01-01T00:00:00Z'
+          userId: userId,
+          createdAt: '2023-01-01T00:00:00Z'
         }
       ]);
     } finally {
@@ -262,7 +265,7 @@ function AdminPage() {
     }
   };
 
-  const handleUpdateReportStatus = async (reportId: number, newStatus: 'reviewed' | 'rejected') => {
+  const handleUpdateReportStatus = async (reportId: string, newStatus: 'reviewed' | 'rejected') => {
     try {
       const success = await updateReportStatus(reportId, newStatus);
       if (success) {
@@ -392,18 +395,18 @@ function AdminPage() {
                     {userMappings.map(mapping => (
                       <tr key={mapping.id} style={{ borderBottom: '1px solid #ddd' }}>
                         <td style={{ padding: '0.75rem' }}>{mapping.id}</td>
-                        <td style={{ padding: '0.75rem' }}>{mapping.station_name}</td>
+                        <td style={{ padding: '0.75rem' }}>{mapping.stationName}</td>
                         <td style={{ padding: '0.75rem' }}>
                           <a
-                            href={`https://www.youtube.com/watch?v=${mapping.video_id}&t=${mapping.start_time}`}
+                            href={`https://www.youtube.com/watch?v=${mapping.videoId}&t=${mapping.startTime}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            {mapping.video_id}
+                            {mapping.videoId}
                           </a>
                         </td>
                         <td style={{ padding: '0.75rem' }}>
-                          {mapping.created_at ? new Date(mapping.created_at).toLocaleString() : '不明'}
+                          {mapping.createdAt ? new Date(mapping.createdAt).toLocaleString() : '不明'}
                         </td>
                         <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                           <button

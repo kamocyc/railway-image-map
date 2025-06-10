@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './lib/auth';
 import MapPage from './pages/MapPage';
@@ -6,37 +5,28 @@ import SubmitPage from './pages/SubmitPage';
 import ListPage from './pages/ListPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
-import { supabase } from './lib/supabase';
-import { StationMapping } from './types/StationMapping';
+import { useEffect, useState } from 'react';
+import { RailwayData } from './types/RailwayData';
+import { getRailwayData } from './lib/supabase';
 
 function App() {
-  const [stationMappings, setStationMappings] = useState<StationMapping[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [railwayData, setRailwayData] = useState<RailwayData[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
-    // データの初期ロード
-    async function loadData() {
+    async function loadRailwayData() {
+      setDataLoading(true);
       try {
-        const { data, error } = await supabase
-          .from('station_mappings')
-          .select('*');
-
-        if (error) {
-          console.error('Error loading data:', error);
-        } else {
-          setStationMappings(data || []);
-        }
-      } catch (err) {
-        console.error('Failed to load data:', err);
-        // 開発中はローカルのJSONデータを使用
-        const localData = await import('./data/station-times.json');
-        setStationMappings(localData.default);
+        const data = await getRailwayData();
+        setRailwayData(data);
+      } catch (error) {
+        console.error('Failed to load railway data:', error);
       } finally {
-        setLoading(false);
+        setDataLoading(false);
       }
     }
 
-    loadData();
+    loadRailwayData();
   }, []);
 
   return (
@@ -58,9 +48,9 @@ function App() {
 
           <main style={{ flexGrow: 1, overflow: 'auto' }}>
             <Routes>
-              <Route path="/" element={<MapPage stationMappings={stationMappings} loading={loading} />} />
+              <Route path="/" element={<MapPage loading={dataLoading} railwayData={railwayData} />} />
               <Route path="/submit" element={<SubmitPage />} />
-              <Route path="/list" element={<ListPage stationMappings={stationMappings} loading={loading} />} />
+              <Route path="/list" element={<ListPage railwayData={railwayData} loading={dataLoading} />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/login" element={<LoginPage />} />
             </Routes>

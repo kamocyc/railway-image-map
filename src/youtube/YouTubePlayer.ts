@@ -22,12 +22,13 @@ export class YouTubePlayer {
         videoId: this.videoId,
         playerVars: {
           autoplay: 1,
-          controls: 1
+          controls: 1,
         },
         startSeconds: this.startTime,
         events: {
           onReady: this.onPlayerReady,
           onStateChange: this.onPlayerStateChange,
+          onError: this.onPlayerError,
         },
       });
     } else {
@@ -42,11 +43,12 @@ export class YouTubePlayer {
           playerVars: {
             autoplay: 1,
             controls: 1,
-            start: this.startTime,
+            startSeconds: this.startTime,
           },
           events: {
             onReady: this.onPlayerReady,
             onStateChange: this.onPlayerStateChange,
+            onError: this.onPlayerError,
           },
         });
       };
@@ -57,8 +59,12 @@ export class YouTubePlayer {
     event.target.playVideo();
   };
 
-  private onPlayerStateChange = (event: any) => {
+  private onPlayerStateChange = () => {
     // Handle player state changes if needed
+  };
+
+  private onPlayerError = (event: any) => {
+    console.error('YouTube Player Error:', event);
   };
 
   public playVideo() {

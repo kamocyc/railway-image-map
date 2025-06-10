@@ -1,59 +1,65 @@
 import L from 'leaflet';
-import { StationMapping } from '../types/StationMapping';
+import 'leaflet/dist/leaflet.css';
+import { RailwayData } from '../types/RailwayData';
 import { YouTubePlayer } from '../youtube/YouTubePlayer';
-import routeGeojsonUrl from '../data/route.json';
 
-export function initializeMap(elementId: string, stationMappings: StationMapping[] = []): L.Map {
-  // データがない場合はデフォルトの位置を使用
-  const initialPosition = stationMappings.length > 0
-    ? [stationMappings[0].lat, stationMappings[0].lon] as [number, number]
-    : [35.681236, 139.767125] as [number, number]; // 東京駅をデフォルトに
+// Leafletのデフォルトアイコン設定
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
-  const map = L.map(elementId).setView(initialPosition, 13);
+// マップを初期化し、駅マーカーを追加する関数
+export function initializeMapWithRailwayData(elementId: string, railwayData: RailwayData[]): L.Map {
+  const firstPosition = railwayData[0]?.stations[0];
+  const map = L.map(elementId).setView([firstPosition.lat, firstPosition.lon], 13); // 東京駅を中心に設定
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  // Add GeoJSON layer for railway routes
-  L.geoJSON(routeGeojsonUrl as any, {
-    style: {
-      color: '#ff7800',
-      weight: 5,
-      opacity: 0.65
+  const youtubePlayer = new YouTubePlayer('youtube-player', railwayData[0].videoId, firstPosition.startTime);
+
+  railwayData.forEach(railway => {
+    // 路線名ラベルの追加
+    if (railway.stations.length > 0) {
+      const latSum = railway.stations.reduce((sum, station) => sum + station.lat, 0);
+      const lngSum = railway.stations.reduce((sum, station) => sum + station.lon, 0);
+      const centerLat = latSum / railway.stations.length;
+      const centerLng = lngSum / railway.stations.length;
+
+      L.marker([centerLat, centerLng], { opacity: 0.01 }) // 透明なマーカー
+        .bindTooltip(`${railway.lineName} (${railway.lineCd})`, { permanent: true, direction: 'right', className: 'line-label' })
+        .addTo(map);
     }
-  }).addTo(map);
 
-  // Add station markers
-  let player: YouTubePlayer | null = null;
-
-  stationMappings.forEach(station => {
-    const marker = L.marker([station.lat, station.lon])
-      .addTo(map)
-      .bindPopup(`
-        <strong>${station.station_name}</strong><br>
-        <button class="play-video-btn" data-video-id="${station.video_id}" data-start-time="${station.start_time}">動画を再生</button>
+    railway.stations.forEach(station => {
+      const marker = L.marker([station.lat, station.lon]).addTo(map);
+      marker.bindPopup(`
+        <b>${station.stationName}</b><br>
+        路線名: ${railway.lineName}<br>
+        路線コード: ${railway.lineCd}<br>
+        駅コード: ${station.stationCd}<br>
+        ビデオID: ${railway.videoId}<br>
+        開始時間: ${station.startTime}秒<br>
+        <button class="play-button" data-video-id="${railway.videoId}" data-start-time="${station.startTime}">動画を再生</button>
       `);
-
-    marker.on('popupopen', (e) => {
-      const popup = e.popup;
-      const container = popup.getElement();
-      const playButton = container?.querySelector('.play-video-btn');
-
-      if (playButton) {
-        playButton.addEventListener('click', () => {
-          const videoId = playButton.getAttribute('data-video-id');
-          const startTime = parseInt(playButton.getAttribute('data-start-time') || '0', 10);
-
-          if (videoId) {
-            if (!player) {
-              player = new YouTubePlayer('youtube-player', videoId, startTime);
-            } else {
-              player.loadVideo(videoId, startTime);
-            }
-          }
-        });
-      }
     });
+  });
+
+  map.on('popupopen', (e) => {
+    const popup = e.popup;
+    const playButton = popup.getElement()?.querySelector('.play-button');
+    if (playButton) {
+      playButton.addEventListener('click', () => {
+        const videoId = playButton.getAttribute('data-video-id');
+        const startTime = parseInt(playButton.getAttribute('data-start-time') || '0', 10);
+        if (videoId) {
+          youtubePlayer.loadVideo(videoId, startTime);
+        }
+      });
+    }
   });
 
   return map;
