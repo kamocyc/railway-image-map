@@ -5,6 +5,7 @@ import { useAuth } from '../lib/auth';
 import { StationMapping } from '../types/StationMapping';
 import { Report } from '../types/Report';
 import { updateReportStatus } from '../lib/reports';
+import camelcaseKeys from 'camelcase-keys';
 
 interface UserData {
   id: string;
@@ -214,7 +215,7 @@ function AdminPage() {
 
       if (error) throw error;
 
-      setUserMappings(data || []);
+      setUserMappings(camelcaseKeys(data) || []);
     } catch (err) {
       console.error('Failed to fetch user mappings:', err);
 
