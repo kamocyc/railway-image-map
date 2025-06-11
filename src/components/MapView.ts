@@ -3,13 +3,6 @@ import 'leaflet/dist/leaflet.css';
 import { RailwayData } from '../types/RailwayData';
 import { YouTubePlayer } from '../youtube/YouTubePlayer';
 
-// Leafletのデフォルトアイコン設定
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
-});
-
 // マップを初期化し、駅マーカーを追加する関数
 export function initializeMapWithRailwayData(elementId: string, railwayData: RailwayData[]): L.Map {
   const firstPosition = railwayData[0]?.stations[0];

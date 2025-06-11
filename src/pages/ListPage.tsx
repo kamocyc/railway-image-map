@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteRailwayData } from '../lib/supabase';
 import { RailwayData, Station } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
 import { useAuth } from '../lib/auth';
+import { isAdmin } from './AdminPage';
 
 interface ListPageProps {
   railwayData: RailwayData[];
@@ -18,6 +19,17 @@ function ListPage({ railwayData, loading }: ListPageProps) {
   const [success, setSuccess] = useState<string | null>(null);
   const [reportingId, setReportingId] = useState<number | null>(null);
   const [reportReason, setReportReason] = useState('');
+  const [isAdminFlag, setIsAdminFlag] = useState(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (user) {
+        const isAdminFlag = await isAdmin(user.id);
+        setIsAdminFlag(isAdminFlag);
+      }
+    };
+    checkAdmin();
+  }, [user]);
 
   const handleDelete = async (id?: number) => {
     if (!id) return;
@@ -234,7 +246,7 @@ function ListPage({ railwayData, loading }: ListPageProps) {
                 <td style={{ padding: '0.75rem' }}>{station.lon}</td>
                 <td style={{ padding: '0.75rem', textAlign: 'center' }}>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-                    {user && user.id === station.userId && (
+                    {(user && user.id === station.userId) || (user && isAdminFlag) ? (
                       <button
                         onClick={() => handleDelete(station.id)}
                         disabled={deleteLoading === station.id}
@@ -250,7 +262,7 @@ function ListPage({ railwayData, loading }: ListPageProps) {
                       >
                         {deleteLoading === station.id ? '削除中...' : '削除'}
                       </button>
-                    )}
+                    ) : null}
                     <button
                       onClick={() => handleReport(station.id)}
                       style={{

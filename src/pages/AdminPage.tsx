@@ -14,6 +14,23 @@ interface UserData {
   mappings_count: number;
 }
 
+export async function isAdmin(userId: string | undefined) {
+  if (!userId) return false;
+
+  try {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', userId)
+      .single();
+
+    return !error && data !== null;
+  } catch (err) {
+    console.error('Admin check failed:', err);
+    return false;
+  }
+}
+
 function AdminPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -27,24 +44,6 @@ function AdminPage() {
   const [reports, setReports] = useState<Report[]>([]);
   const [loadingReports, setLoadingReports] = useState(false);
 
-  // 管理者かどうかを確認する関数
-  const isAdmin = async () => {
-    if (!user) return false;
-
-    try {
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('user_id')
-        .eq('user_id', user.id)
-        .single();
-
-      return !error && data !== null;
-    } catch (err) {
-      console.error('Admin check failed:', err);
-      return false;
-    }
-  };
-
   useEffect(() => {
     if (!user) {
       navigate('/login');
@@ -52,7 +51,7 @@ function AdminPage() {
     }
 
     async function checkAdminAndFetchUsers() {
-      const adminStatus = await isAdmin();
+      const adminStatus = await isAdmin(user?.id);
 
       if (!adminStatus) {
         setError('管理者権限がありません');
@@ -191,7 +190,7 @@ function AdminPage() {
   useEffect(() => {
     async function checkAdminAndFetchReports() {
       if (activeTab === 'reports' && user) {
-        const adminStatus = await isAdmin();
+        const adminStatus = await isAdmin(user.id);
         if (adminStatus) {
           fetchReports();
         }
