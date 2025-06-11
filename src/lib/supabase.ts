@@ -11,7 +11,6 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 // Supabaseクライアントの作成
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// 新しいデータ構造に基づいた鉄道データの取得
 export async function getRailwayData(): Promise<RailwayData[]> {
   try {
     // station_mappingsテーブルからデータを取得
@@ -31,6 +30,7 @@ export async function getRailwayData(): Promise<RailwayData[]> {
       const key = `${mapping.video_id}-${mapping.line_name}-${mapping.line_cd}`;
 
       const station: Station = {
+        id: mapping.id,
         stationCd: mapping.station_cd,
         stationName: mapping.station_name,
         startTime: mapping.start_time,

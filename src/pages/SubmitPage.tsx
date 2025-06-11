@@ -60,6 +60,7 @@ function SubmitPage() {
         lineCd: lineCd,
         stations: [
           {
+            id: undefined as any,
             stationCd: stationCd,
             stationName: formData.stationName,
             startTime: startTime,
