@@ -67,8 +67,9 @@ export async function addRailwayData(data: RailwayData) {
     station_cd: station.stationCd,
     station_name: station.stationName,
     start_time: station.startTime,
-    latitude: station.lat,
-    longitude: station.lon,
+    lat: station.lat,
+    lon: station.lon,
+    user_id: data.userId,
   }));
 
   const { error } = await supabase
@@ -94,4 +95,43 @@ export async function deleteRailwayData(id: number) {
     return false;
   }
   return true;
+}
+
+export async function addStationMapping(mapping: {
+  stationCd: string;
+  stationName: string;
+  videoId: string;
+  startTime: number;
+  lat: number;
+  lon: number;
+  lineName: string;
+  lineCd: number;
+  userId: string;
+}) {
+  try {
+    const { data, error } = await supabase
+      .from('station_mappings')
+      .insert([{
+        station_cd: mapping.stationCd,
+        station_name: mapping.stationName,
+        video_id: mapping.videoId,
+        start_time: mapping.startTime,
+        lat: mapping.lat,
+        lon: mapping.lon,
+        line_name: mapping.lineName,
+        line_cd: mapping.lineCd,
+        user_id: mapping.userId
+      }])
+      .select();
+
+    if (error) {
+      console.error('Error adding station mapping:', error);
+      throw error;
+    }
+
+    return data[0];
+  } catch (error) {
+    console.error('Error in addStationMapping:', error);
+    throw error;
+  }
 }

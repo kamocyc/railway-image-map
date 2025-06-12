@@ -3,14 +3,14 @@
 -- 駅マッピングテーブル
 CREATE TABLE station_mappings (
   id SERIAL PRIMARY KEY,
-  station_cd INTEGER NOT NULL,
+  station_cd TEXT NOT NULL,
   station_name TEXT NOT NULL,
   video_id TEXT NOT NULL,
   start_time INTEGER NOT NULL,
   lat FLOAT NOT NULL,
   lon FLOAT NOT NULL,
   line_name TEXT,           -- 追加: 路線名
-  line_cd INTEGER,          -- 追加: 路線コード
+  line_cd TEXT,          -- 追加: 路線コード
   user_id UUID REFERENCES auth.users,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(station_cd, video_id)

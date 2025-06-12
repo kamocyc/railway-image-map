@@ -12,7 +12,7 @@ export function initializeMapWithRailwayData(elementId: string, railwayData: Rai
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  const youtubePlayer = new YouTubePlayer('youtube-player', railwayData[0].videoId, firstPosition.startTime);
+  const youtubePlayer = YouTubePlayer.getInstance('youtube-player', railwayData[0].videoId, firstPosition.startTime);
 
   railwayData.forEach(railway => {
     // 路線名ラベルの追加

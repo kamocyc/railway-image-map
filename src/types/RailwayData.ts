@@ -1,5 +1,5 @@
 export interface Station {
-  id: number;
+  id?: number;
   stationCd: number;
   stationName: string;
   startTime: number;
