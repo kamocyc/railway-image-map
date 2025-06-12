@@ -23,8 +23,6 @@ function ListPage({ railwayData, loading }: ListPageProps) {
   const [reportModalOpen, setReportModalOpen] = useState(false);
   const [selectedStationId, setSelectedStationId] = useState<number | null>(null);
   const [reportReason, setReportReason] = useState('');
-  const [addStationModalOpen, setAddStationModalOpen] = useState(false);
-  const [selectedRailway, setSelectedRailway] = useState<RailwayData | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -84,46 +82,6 @@ function ListPage({ railwayData, loading }: ListPageProps) {
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       setError('通報に失敗しました');
-      setTimeout(() => setError(null), 3000);
-    }
-  };
-
-  const handleAddStation = (railway: RailwayData) => {
-    setSelectedRailway(railway);
-    setAddStationModalOpen(true);
-  };
-
-  const handleStationAdd = async (station: {
-    stationCd: string;
-    stationName: string;
-    startTime: number;
-    lat: number;
-    lon: number;
-  }) => {
-    if (!selectedRailway || !user) {
-      return;
-    }
-
-    try {
-      await addStationMapping({
-        stationCd: station.stationCd,
-        stationName: station.stationName,
-        videoId: selectedRailway.videoId,
-        startTime: station.startTime,
-        lat: station.lat,
-        lon: station.lon,
-        lineName: selectedRailway.lineName,
-        lineCd: selectedRailway.lineCd,
-        userId: user.id
-      });
-
-      setSuccess('駅の追加が完了しました');
-      setAddStationModalOpen(false);
-      setSelectedRailway(null);
-      setTimeout(() => setSuccess(null), 3000);
-      window.location.reload();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : '駅の追加に失敗しました');
       setTimeout(() => setError(null), 3000);
     }
   };
@@ -240,56 +198,6 @@ function ListPage({ railwayData, loading }: ListPageProps) {
         </div>
       )}
 
-      {/* 駅追加モーダル */}
-      {addStationModalOpen && selectedRailway && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '2rem',
-            borderRadius: '8px',
-            width: '90%',
-            maxWidth: '500px'
-          }}>
-            <h3 style={{ marginTop: 0 }}>駅を追加</h3>
-            {selectedRailway && (
-              <StationInput
-                lineCd={selectedRailway.lineCd.toString()}
-                onStationAdd={handleStationAdd}
-              />
-            )}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-              <button
-                onClick={() => {
-                  setAddStationModalOpen(false);
-                  setSelectedRailway(null);
-                }}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                キャンセル
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {railwayData.map((railway) => (
           <div key={`${railway.videoId}-${railway.lineCd}`} style={{ border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
@@ -306,19 +214,6 @@ function ListPage({ railwayData, loading }: ListPageProps) {
                 <div style={{ color: '#666' }}>
                   動画ID: <a href={`https://www.youtube.com/watch?v=${railway.videoId}`} target="_blank" rel="noopener noreferrer">{railway.videoId}</a>
                 </div>
-                <button
-                  onClick={() => handleAddStation(railway)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#2196f3',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  駅を追加
-                </button>
               </div>
             </div>
             <div style={{ overflowX: 'auto' }}>
