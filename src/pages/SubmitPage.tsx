@@ -12,6 +12,7 @@ function SubmitPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [csvDataLoaded, setCsvDataLoaded] = useState(false);
+  const [csvInput, setCsvInput] = useState('');
 
   const [railwayData, setRailwayData] = useState({
     videoId: '',
@@ -102,6 +103,46 @@ function SubmitPage() {
     setStations(prev => prev.filter((_, i) => i !== index));
   };
 
+  const handleCsvSubmit = () => {
+    if (!railwayData.lineCd) {
+      setError('路線を選択してください');
+      return;
+    }
+
+    try {
+      const lines = csvInput.trim().split('\n');
+      const newStations = lines.map(line => {
+        const [stationName, timeStr] = line.split(',').map(s => s.trim());
+        if (!stationName || !timeStr) {
+          throw new Error('CSVの形式が正しくありません');
+        }
+
+        const stationData = findStationByName(stationName, railwayData.lineCd);
+        if (!stationData) {
+          throw new Error(`駅 "${stationName}" は指定された路線に存在しません`);
+        }
+
+        // HH:MM:SS形式を秒に変換
+        const [hours, minutes, seconds] = timeStr.split(':').map(Number);
+        const startTime = hours * 3600 + minutes * 60 + seconds;
+
+        return {
+          stationCd: stationData.station_cd,
+          stationName: stationData.station_name,
+          startTime: startTime.toString(),
+          lat: stationData.lat,
+          lon: stationData.lon,
+        };
+      });
+
+      setStations(newStations);
+      setCsvInput('');
+      setError(null);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'CSVの処理に失敗しました');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -170,6 +211,7 @@ function SubmitPage() {
           lat: '',
           lon: '',
         }]);
+        setCsvInput('');
 
         // 3秒後に地図ページに遷移
         setTimeout(() => {
@@ -326,6 +368,43 @@ function SubmitPage() {
             >
               駅を追加
             </button>
+          </div>
+
+          {/* CSV一括登録セクション */}
+          <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px', width: '100%', boxSizing: 'border-box' }}>
+            <h4 style={{ marginTop: 0 }}>CSV形式で一括登録</h4>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                CSV形式で駅情報を入力:
+                <textarea
+                  value={csvInput}
+                  onChange={(e) => setCsvInput(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    marginTop: '0.5rem',
+                    minHeight: '100px',
+                    boxSizing: 'border-box'
+                  }}
+                  placeholder="駅名,時間 (HH:MM:SS)&#10;例:&#10;長町,00:00:00&#10;太子堂,00:01:15"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handleCsvSubmit}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#4caf50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  marginTop: '0.5rem'
+                }}
+              >
+                一括登録
+              </button>
+            </div>
           </div>
 
           {stations.map((station, index) => (
