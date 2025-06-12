@@ -4,7 +4,6 @@ import { addRailwayData } from '../lib/supabase';
 import { RailwayData, Station } from '../types/RailwayData';
 import { useAuth } from '../lib/auth';
 import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../lib/csvData';
-import { StationInput } from '../components/StationInput';
 
 function SubmitPage() {
   const navigate = useNavigate();

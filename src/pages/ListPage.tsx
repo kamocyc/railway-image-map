@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteRailwayData, addStationMapping } from '../lib/supabase';
-import { RailwayData, Station } from '../types/RailwayData';
+import { RailwayData } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
 import { useAuth } from '../lib/auth';
 import { isAdmin } from './AdminPage';
-import { getStationSuggestions, loadCSVData } from '../lib/csvData';
+import { loadCSVData } from '../lib/csvData';
 import { StationInput } from '../components/StationInput';
 
 interface ListPageProps {
@@ -25,14 +25,6 @@ function ListPage({ railwayData, loading }: ListPageProps) {
   const [reportReason, setReportReason] = useState('');
   const [addStationModalOpen, setAddStationModalOpen] = useState(false);
   const [selectedRailway, setSelectedRailway] = useState<RailwayData | null>(null);
-  const [newStation, setNewStation] = useState({
-    stationName: '',
-    startTime: '0',
-  });
-  const [stationSuggestions, setStationSuggestions] = useState<Array<{ station_cd: string; station_name: string; lat: string; lon: string }>>([]);
-  const [csvDataLoaded, setCsvDataLoaded] = useState(false);
-  const [csvInput, setCsvInput] = useState('');
-  const [csvError, setCsvError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -46,8 +38,7 @@ function ListPage({ railwayData, loading }: ListPageProps) {
 
   useEffect(() => {
     const initializeData = async () => {
-      const success = await loadCSVData();
-      setCsvDataLoaded(success);
+      await loadCSVData();
     };
     initializeData();
   }, []);
@@ -99,133 +90,7 @@ function ListPage({ railwayData, loading }: ListPageProps) {
 
   const handleAddStation = (railway: RailwayData) => {
     setSelectedRailway(railway);
-    setNewStation({
-      stationName: '',
-      startTime: '0',
-    });
-    setStationSuggestions([]);
     setAddStationModalOpen(true);
-  };
-
-  const handleStationNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setNewStation(prev => ({ ...prev, stationName: value }));
-
-    if (selectedRailway && value) {
-      const suggestions = getStationSuggestions(value, selectedRailway.lineCd.toString());
-      setStationSuggestions(suggestions);
-    } else {
-      setStationSuggestions([]);
-    }
-  };
-
-  const handleStationSelect = (station: { station_cd: string; station_name: string; lat: string; lon: string }) => {
-    setNewStation(prev => ({
-      ...prev,
-      stationName: station.station_name
-    }));
-    setStationSuggestions([]);
-  };
-
-  const handleAddStationSubmit = async () => {
-    if (!selectedRailway || !newStation.stationName || !user) {
-      return;
-    }
-
-    try {
-      const selectedStation = stationSuggestions.find(s => s.station_name === newStation.stationName);
-      if (!selectedStation) {
-        throw new Error('駅が見つかりません');
-      }
-
-      await addStationMapping({
-        stationCd: selectedStation.station_cd,
-        stationName: selectedStation.station_name,
-        videoId: selectedRailway.videoId,
-        startTime: parseInt(newStation.startTime, 10),
-        lat: parseFloat(selectedStation.lat),
-        lon: parseFloat(selectedStation.lon),
-        lineName: selectedRailway.lineName,
-        lineCd: selectedRailway.lineCd,
-        userId: user.id
-      });
-
-      setSuccess('駅の追加が完了しました');
-      setAddStationModalOpen(false);
-      setSelectedRailway(null);
-      setNewStation({
-        stationName: '',
-        startTime: '0',
-      });
-      setTimeout(() => setSuccess(null), 3000);
-      window.location.reload(); // 一覧を更新
-    } catch (error) {
-      setError(error instanceof Error ? error.message : '駅の追加に失敗しました');
-      setTimeout(() => setError(null), 3000);
-    }
-  };
-
-  const parseTimeToSeconds = (timeStr: string): number => {
-    const [hours, minutes, seconds] = timeStr.split(':').map(Number);
-    return (hours * 3600) + (minutes * 60) + seconds;
-  };
-
-  const handleCsvSubmit = async () => {
-    if (!selectedRailway || !user) {
-      return;
-    }
-
-    try {
-      const lines = csvInput.trim().split('\n');
-      const stations = [];
-
-      for (const line of lines) {
-        const [stationName, timeStr] = line.split(',').map(s => s.trim());
-        if (!stationName || !timeStr) {
-          throw new Error('駅名と時間をカンマ区切りで入力してください');
-        }
-
-        const selectedStation = stationSuggestions.find(s => s.station_name === stationName);
-        if (!selectedStation) {
-          throw new Error(`駅 "${stationName}" が見つかりません`);
-        }
-
-        if (!/^\d{2}:\d{2}:\d{2}$/.test(timeStr)) {
-          throw new Error(`時間 "${timeStr}" の形式が正しくありません (HH:MM:SS)`);
-        }
-
-        stations.push({
-          stationCd: selectedStation.station_cd,
-          stationName: selectedStation.station_name,
-          videoId: selectedRailway.videoId,
-          startTime: parseTimeToSeconds(timeStr),
-          lat: parseFloat(selectedStation.lat),
-          lon: parseFloat(selectedStation.lon),
-          lineName: selectedRailway.lineName,
-          lineCd: selectedRailway.lineCd,
-          userId: user.id
-        });
-      }
-
-      // 一括登録
-      for (const station of stations) {
-        await addStationMapping(station);
-      }
-
-      setSuccess(`${stations.length}件の駅を登録しました`);
-      setAddStationModalOpen(false);
-      setSelectedRailway(null);
-      setNewStation({
-        stationName: '',
-        startTime: '0',
-      });
-      setCsvInput('');
-      setTimeout(() => setSuccess(null), 3000);
-      window.location.reload();
-    } catch (error) {
-      setError(error instanceof Error ? error.message : '駅の登録に失敗しました');
-      setTimeout(() => setError(null), 3000);
-    }
   };
 
   const handleStationAdd = async (station: {

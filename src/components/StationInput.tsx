@@ -13,7 +13,6 @@ interface StationInputProps {
 }
 
 export function StationInput({ lineCd, onStationAdd }: StationInputProps) {
-    const [csvDataLoaded, setCsvDataLoaded] = useState(false);
     const [stationSuggestions, setStationSuggestions] = useState<Array<{ station_cd: string; station_name: string; lat: string; lon: string }>>([]);
     const [newStation, setNewStation] = useState({
         stationName: '',
@@ -24,8 +23,7 @@ export function StationInput({ lineCd, onStationAdd }: StationInputProps) {
 
     useEffect(() => {
         const initializeData = async () => {
-            const success = await loadCSVData();
-            setCsvDataLoaded(success);
+            await loadCSVData();
         };
         initializeData();
     }, []);
@@ -80,7 +78,6 @@ export function StationInput({ lineCd, onStationAdd }: StationInputProps) {
     const handleCsvSubmit = () => {
         try {
             const lines = csvInput.trim().split('\n');
-            const stations = [];
 
             for (const line of lines) {
                 const [stationName, timeStr] = line.split(',').map(s => s.trim());
