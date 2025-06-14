@@ -1,11 +1,11 @@
-import L from 'leaflet';
+import type LType from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/markers.css';
 import { RailwayVideo } from '../types/RailwayData';
 import { YouTubePlayer } from '../youtube/YouTubePlayer';
 
 // マップを初期化し、駅マーカーを追加する関数
-export function initializeMapWithRailwayData(elementId: string, railwayVideos: RailwayVideo[]): L.Map {
+export function initializeMapWithRailwayData(elementId: string, railwayVideos: RailwayVideo[], L: typeof LType): L.Map {
   const firstPosition = railwayVideos[0]?.stations[0];
   // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
   const map = L.map(elementId).setView([35.6812, 139.7671], 5);

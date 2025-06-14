@@ -13,23 +13,25 @@ function MapPage({ loading, railwayData }: MapPageProps) {
 
   // マップの初期化と更新
   useEffect(() => {
-    // データがロード中の場合は何もしない
-    if (loading) return;
+    import('leaflet').then((L) => {
+      // データがロード中の場合は何もしない
+      if (loading) return;
 
-    // データが利用可能かチェック
-    const hasNewData = railwayData.length > 0;
+      // データが利用可能かチェック
+      const hasNewData = railwayData.length > 0;
 
-    if (!hasNewData) return; // 新しいデータがない場合は何もしない
+      if (!hasNewData) return; // 新しいデータがない場合は何もしない
 
-    // マップがすでに初期化されている場合は、既存のマップを削除
-    if (mapInitializedRef.current && mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-    }
+      // マップがすでに初期化されている場合は、既存のマップを削除
+      if (mapInitializedRef.current && mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
 
-    mapRef.current = initializeMapWithRailwayData('map', railwayData);
+      mapRef.current = initializeMapWithRailwayData('map', railwayData, L);
 
-    mapInitializedRef.current = true;
+      mapInitializedRef.current = true;
+    });
 
     // コンポーネントのアンマウント時にマップをクリーンアップ
     return () => {

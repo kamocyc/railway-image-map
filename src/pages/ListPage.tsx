@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/compat/router';
 import { deleteRailwayData, deleteRailwayLine } from '../lib/supabase';
 import { RailwayVideo } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
@@ -13,7 +13,7 @@ interface ListPageProps {
 }
 
 function ListPage({ railwayData, loading }: ListPageProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -127,7 +127,11 @@ function ListPage({ railwayData, loading }: ListPageProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h2>駅マッピング一覧</h2>
         <button
-          onClick={() => navigate('/submit')}
+          onClick={() => {
+            if (router) {
+              router.push('/submit');
+            }
+          }}
           style={{
             padding: '0.5rem 1rem',
             backgroundColor: '#4caf50',

@@ -1,3 +1,5 @@
+// import 'server-only';
+
 interface LineData {
     line_cd: string;
     company_cd: string;

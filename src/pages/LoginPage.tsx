@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/compat/router';
 import { useAuth } from '../lib/auth';
 
 function LoginPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user, signIn, signUp, signOut } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -24,7 +24,9 @@ function LoginPage() {
         // ログイン処理
         const { error } = await signIn(email, password);
         if (error) throw error;
-        navigate('/');
+        if (router) {
+          router.push('/');
+        }
       } else {
         // サインアップ処理
         const { error, user } = await signUp(email, password);

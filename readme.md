@@ -43,9 +43,9 @@ npm install
 `.env.example` ファイルを `.env` にコピーし、Supabaseの接続情報を設定します。
 
 ```
-VITE_SUPABASE_URL=your_supabase_url_here
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-VITE_GEMINI_API_KEY=your_gemini_api_key
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_ANON_KEY=your_supabase_anon_key_here
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
 4. Supabaseのセットアップ

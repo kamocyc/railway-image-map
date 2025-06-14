@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/compat/router';
 import { addRailwayData } from '../lib/supabase';
 import { RailwayVideo, StationVideoTime } from '../types/RailwayData';
 import { useAuth } from '../lib/auth';
@@ -7,7 +7,7 @@ import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName,
 import { processStationText } from '../lib/gemini';
 
 function SubmitPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -270,7 +270,9 @@ function SubmitPage() {
 
         // 3秒後に地図ページに遷移
         setTimeout(() => {
-          navigate('/');
+          if (router) {
+            router.push('/');
+          }
         }, 3000);
       } else {
         throw new Error('データの保存に失敗しました');
@@ -287,7 +289,11 @@ function SubmitPage() {
       <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto' }}>
         <h2>投稿するにはログインが必要です</h2>
         <p>ログインページからログインしてください。</p>
-        <button onClick={() => navigate('/login')} style={{ padding: '0.5rem 1rem' }}>
+        <button onClick={() => {
+          if (router) {
+            router.push('/login');
+          }
+        }} style={{ padding: '0.5rem 1rem' }}>
           ログインページへ
         </button>
       </div>
@@ -586,7 +592,11 @@ function SubmitPage() {
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => {
+              if (router) {
+                router.push('/');
+              }
+            }}
             style={{
               padding: '0.5rem 1rem',
               backgroundColor: '#9e9e9e',

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/compat/router';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 import { StationMapping } from '../types/StationMapping';
@@ -32,7 +32,7 @@ export async function isAdmin(userId: string | undefined) {
 }
 
 function AdminPage() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { user } = useAuth();
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +46,9 @@ function AdminPage() {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      if (router) {
+        router.push('/login');
+      }
       return;
     }
 
@@ -62,7 +64,7 @@ function AdminPage() {
     }
 
     checkAdminAndFetchUsers();
-  }, [user, navigate]);
+  }, [user, router]);
 
   async function fetchUsers() {
     try {
@@ -294,7 +296,11 @@ function AdminPage() {
         <div style={{ padding: '1rem', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '1rem', borderRadius: '4px' }}>
           {error}
         </div>
-        <button onClick={() => navigate('/')} style={{ padding: '0.5rem 1rem' }}>
+        <button onClick={() => {
+          if (router) {
+            router.push('/');
+          }
+        }} style={{ padding: '0.5rem 1rem' }}>
           ホームに戻る
         </button>
       </div>
