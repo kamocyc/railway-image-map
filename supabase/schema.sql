@@ -47,9 +47,19 @@ CREATE POLICY "Station mappings are viewable by everyone"
 CREATE POLICY "Authenticated users can insert their own mappings" 
   ON station_mappings FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- 自分の投稿のみ更新・削除可能
+-- 自分の投稿または管理者は更新可能
 CREATE POLICY "Users can update their own mappings" 
-  ON station_mappings FOR UPDATE USING (auth.uid() = user_id);
+  ON station_mappings FOR UPDATE USING (
+    auth.uid() = user_id OR 
+    EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid())
+  );
 
+-- 自分の投稿または管理者は削除可能
 CREATE POLICY "Users can delete their own mappings" 
-  ON station_mappings FOR DELETE USING (auth.uid() = user_id);
+  ON station_mappings FOR DELETE USING (
+    auth.uid() = user_id OR 
+    EXISTS (SELECT 1 FROM admin_users WHERE user_id = auth.uid())
+  );
+
+-- admin_usersテーブルのポリシー
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
