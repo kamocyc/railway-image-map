@@ -4,7 +4,7 @@ import { addRailwayData } from '../../src/lib/supabase';
 import { RailwayVideo, StationVideoTime } from '../../src/types/RailwayData';
 import { useAuth } from '../../src/lib/auth';
 import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../../src/lib/csvData';
-import { processStationText } from '../../src/lib/gemini';
+import { processStationText } from '@/lib/api';
 
 function SubmitPage() {
   const router = useRouter();
