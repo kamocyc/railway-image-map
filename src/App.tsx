@@ -6,7 +6,7 @@ import ListPage from './pages/ListPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import { useEffect, useState } from 'react';
-import { RailwayData } from './types/RailwayData';
+import { RailwayVideo } from './types/RailwayData';
 import { getRailwayData } from './lib/supabase';
 
 function AppHeader() {
@@ -35,7 +35,7 @@ function AppHeader() {
 }
 
 function App() {
-  const [railwayData, setRailwayData] = useState<RailwayData[]>([]);
+  const [railwayData, setRailwayData] = useState<RailwayVideo[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {

@@ -1,15 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
-import { RailwayData, Station } from '../types/RailwayData';
+import { RailwayVideo, StationVideoTime } from '../types/RailwayData';
 
 // Supabaseの環境変数
-// 実際のプロジェクトでは.envファイルなどで管理することをお勧めします
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Supabaseクライアントの作成
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function getRailwayData(): Promise<RailwayData[]> {
+export async function getRailwayData(): Promise<RailwayVideo[]> {
   try {
     // station_mappingsテーブルからデータを取得
     const { data, error } = await supabase
@@ -22,12 +21,12 @@ export async function getRailwayData(): Promise<RailwayData[]> {
     }
 
     // 取得したデータを新しい構造に変換
-    const railwayDataMap = new Map<string, RailwayData>();
+    const railwayDataMap = new Map<string, RailwayVideo>();
 
     data.forEach((mapping: any) => {
-      const key = `${mapping.video_id}-${mapping.line_name}-${mapping.line_cd}`;
+      const key = `${mapping.video_id}-${mapping.line_cd}`;
 
-      const station: Station = {
+      const station: StationVideoTime = {
         id: mapping.id,
         stationCd: mapping.station_cd,
         stationName: mapping.station_name,
@@ -57,7 +56,7 @@ export async function getRailwayData(): Promise<RailwayData[]> {
 }
 
 // 新しい鉄道データを追加
-export async function addRailwayData(data: RailwayData) {
+export async function addRailwayData(data: RailwayVideo) {
   const recordsToInsert = data.stations.map(station => ({
     video_id: data.videoId,
     line_name: data.lineName,

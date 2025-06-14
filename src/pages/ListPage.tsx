@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteRailwayData } from '../lib/supabase';
-import { RailwayData } from '../types/RailwayData';
+import { RailwayVideo } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
 import { useAuth } from '../lib/auth';
 import { isAdmin } from './AdminPage';
 import { loadCSVData } from '../lib/csvData';
 
 interface ListPageProps {
-  railwayData: RailwayData[];
+  railwayData: RailwayVideo[];
   loading: boolean;
 }
 

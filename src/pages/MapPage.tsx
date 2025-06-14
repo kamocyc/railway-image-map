@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { initializeMapWithRailwayData } from '../components/MapView';
-import { RailwayData } from '../types/RailwayData';
+import { RailwayVideo } from '../types/RailwayData';
 
 interface MapPageProps {
   loading: boolean;
-  railwayData: RailwayData[];
+  railwayData: RailwayVideo[];
 }
 
 function MapPage({ loading, railwayData }: MapPageProps) {

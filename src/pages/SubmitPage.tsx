@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addRailwayData } from '../lib/supabase';
-import { RailwayData, Station } from '../types/RailwayData';
+import { RailwayVideo, StationVideoTime } from '../types/RailwayData';
 import { useAuth } from '../lib/auth';
 import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../lib/csvData';
 import { processStationText } from '../lib/gemini';
@@ -221,7 +221,7 @@ function SubmitPage() {
       }
 
       // 駅データの検証
-      const validatedStations: Station[] = stations.map(station => {
+      const validatedStations: StationVideoTime[] = stations.map(station => {
         const stationData = findStationByName(station.stationName, railwayData.lineCd);
         if (!stationData) {
           throw new Error(`駅 "${station.stationName}" は指定された路線に存在しません`);
@@ -241,7 +241,7 @@ function SubmitPage() {
         };
       });
 
-      const newMapping: RailwayData = {
+      const newMapping: RailwayVideo = {
         videoId: railwayData.videoId,
         lineName: railwayData.lineName,
         lineCd: parseInt(railwayData.lineCd, 10),

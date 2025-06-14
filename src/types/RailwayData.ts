@@ -1,4 +1,4 @@
-export interface Station {
+export interface StationVideoTime {
   id?: number;
   stationCd: number;
   stationName: string;
@@ -8,11 +8,11 @@ export interface Station {
   userId?: string;
 }
 
-export interface RailwayData {
+export interface RailwayVideo {
   id?: number;
   videoId: string;
   lineName: string;
   lineCd: number;
-  stations: Station[];
+  stations: StationVideoTime[];
   userId?: string;
 }
