@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth';
 function LoginPage() {
   const navigate = useNavigate();
   const { user, signIn, signUp, signOut } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +29,7 @@ function LoginPage() {
         // サインアップ処理
         const { error, user } = await signUp(email, password);
         if (error) throw error;
-        
+
         if (user) {
           setMessage('登録が完了しました。メールを確認してアカウントを有効化してください。');
           setMode('login');
@@ -61,14 +61,14 @@ function LoginPage() {
         <h2>ログイン済み</h2>
         <p>あなたは既にログインしています。</p>
         <p>メールアドレス: {user.email}</p>
-        
-        <button 
+
+        <button
           onClick={handleLogout}
           disabled={loading}
-          style={{ 
-            padding: '0.75rem 1.5rem', 
-            backgroundColor: '#f44336', 
-            color: 'white', 
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#f44336',
+            color: 'white',
             border: 'none',
             borderRadius: '4px',
             cursor: loading ? 'not-allowed' : 'pointer',
@@ -84,14 +84,14 @@ function LoginPage() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '400px', margin: '0 auto' }}>
-      <h2>{mode === 'login' ? 'ログイン' : 'アカウント登録'}</h2>
-      
+      <h2>{mode === 'login' ? '管理ログイン' : 'アカウント登録'}</h2>
+
       {error && (
         <div style={{ padding: '1rem', backgroundColor: '#ffebee', color: '#c62828', marginBottom: '1rem', borderRadius: '4px' }}>
           {error}
         </div>
       )}
-      
+
       {message && (
         <div style={{ padding: '1rem', backgroundColor: '#e8f5e9', color: '#2e7d32', marginBottom: '1rem', borderRadius: '4px' }}>
           {message}
@@ -125,13 +125,13 @@ function LoginPage() {
           </label>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={loading}
-          style={{ 
-            padding: '0.75rem 1.5rem', 
-            backgroundColor: '#2196f3', 
-            color: 'white', 
+          style={{
+            padding: '0.75rem 1.5rem',
+            backgroundColor: '#2196f3',
+            color: 'white',
             border: 'none',
             borderRadius: '4px',
             cursor: loading ? 'not-allowed' : 'pointer',
@@ -143,7 +143,7 @@ function LoginPage() {
         </button>
       </form>
 
-      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+      {/* <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
         {mode === 'login' ? (
           <p>
             アカウントをお持ちでない場合は
@@ -167,7 +167,7 @@ function LoginPage() {
             からログイン
           </p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
