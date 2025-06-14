@@ -3,9 +3,7 @@ import { RailwayData, Station } from '../types/RailwayData';
 
 // Supabaseの環境変数
 // 実際のプロジェクトでは.envファイルなどで管理することをお勧めします
-// @ts-ignore
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-// @ts-ignore
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Supabaseクライアントの作成

@@ -4,6 +4,7 @@ import { addRailwayData } from '../lib/supabase';
 import { RailwayData, Station } from '../types/RailwayData';
 import { useAuth } from '../lib/auth';
 import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../lib/csvData';
+import { processStationText } from '../lib/gemini';
 
 function SubmitPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function SubmitPage() {
   const [success, setSuccess] = useState(false);
   const [csvDataLoaded, setCsvDataLoaded] = useState(false);
   const [csvInput, setCsvInput] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [railwayData, setRailwayData] = useState({
     videoId: '',
@@ -103,7 +105,25 @@ function SubmitPage() {
     setStations(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleCsvSubmit = () => {
+  const handleGeminiProcess = async () => {
+    if (!csvInput.trim()) {
+      setError('テキストを入力してください');
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const processedText = await processStationText(csvInput);
+      setCsvInput(processedText);
+      setError(null);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'テキストの処理に失敗しました');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCsvSubmit = async () => {
     if (!railwayData.lineCd) {
       setError('路線を選択してください');
       return;
@@ -112,7 +132,7 @@ function SubmitPage() {
     try {
       const lines = csvInput.trim().split('\n');
       const newStations = lines.map(line => {
-        const [stationName, timeStr] = line.split(',').map(s => s.trim());
+        const [timeStr, stationName] = line.split(',').map(s => s.trim());
         if (!stationName || !timeStr) {
           throw new Error('CSVの形式が正しくありません');
         }
@@ -122,9 +142,44 @@ function SubmitPage() {
           throw new Error(`駅 "${stationName}" は指定された路線に存在しません`);
         }
 
-        // HH:MM:SS形式を秒に変換
-        const [hours, minutes, seconds] = timeStr.split(':').map(Number);
-        const startTime = hours * 3600 + minutes * 60 + seconds;
+        // 時間文字列のバリデーション
+        const validateTimeString = (timeStr: string): void => {
+          // 基本的なフォーマットチェック
+          if (!/^\d{1,2}:\d{2}(:\d{2})?$/.test(timeStr)) {
+            throw new Error('時間は "MM:SS" または "HH:MM:SS" 形式で入力してください');
+          }
+
+          const elements = timeStr.split(':').map(Number);
+
+          // 数値の範囲チェック
+          if (elements.length === 2) {
+            // MM:SS形式
+            if (elements[0] < 0 || elements[0] > 59) {
+              throw new Error('分は0から59の間で入力してください');
+            }
+            if (elements[1] < 0 || elements[1] > 59) {
+              throw new Error('秒は0から59の間で入力してください');
+            }
+          } else {
+            // HH:MM:SS形式
+            if (elements[0] < 0 || elements[0] > 23) {
+              throw new Error('時間は0から23の間で入力してください');
+            }
+            if (elements[1] < 0 || elements[1] > 59) {
+              throw new Error('分は0から59の間で入力してください');
+            }
+            if (elements[2] < 0 || elements[2] > 59) {
+              throw new Error('秒は0から59の間で入力してください');
+            }
+          }
+        };
+
+        // 時間文字列のバリデーションを実行
+        validateTimeString(timeStr);
+
+        // 時間を秒に変換
+        const elements = timeStr.split(':').map(Number);
+        const startTime = elements.length === 2 ? elements[0] * 60 + elements[1] : elements[0] * 3600 + elements[1] * 60 + elements[2];
 
         return {
           stationCd: stationData.station_cd,
@@ -344,16 +399,73 @@ function SubmitPage() {
                 style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box', backgroundColor: '#f5f5f5' }}
               />
             </label>
-            <small style={{ display: 'block', color: '#666' }}>
-              路線名を選択すると自動的に入力されます
-            </small>
           </div>
         </div>
 
         {/* 駅情報セクション */}
         <div style={{ marginBottom: '2rem', width: '100%', boxSizing: 'border-box' }}>
+
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 style={{ margin: 0 }}>駅情報</h3>
+          </div>
+
+          {/* CSV一括登録セクション */}
+          <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px', width: '100%', boxSizing: 'border-box' }}>
+            <h4 style={{ marginTop: 0 }}>CSV形式で駅を一括登録</h4>
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>
+                <textarea
+                  value={csvInput}
+                  onChange={(e) => setCsvInput(e.target.value)}
+                  disabled={isProcessing}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    marginTop: '0.5rem',
+                    minHeight: '200px',
+                    cursor: isProcessing ? 'not-allowed' : 'text',
+                    boxSizing: 'border-box'
+                  }}
+                  placeholder="時間 (HH:MM:SS),駅名&#10;例:&#10;00:00:00,長町&#10;00:01:15,太子堂"
+                />
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={handleGeminiProcess}
+                  disabled={isProcessing}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#2196f3',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: isProcessing ? 'not-allowed' : 'pointer',
+                    opacity: isProcessing ? 0.7 : 1
+                  }}
+                >
+                  {isProcessing ? '処理中...' : 'Geminiで整形'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCsvSubmit}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    backgroundColor: '#4caf50',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  一括登録
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3 style={{ margin: 0 }}>駅一覧</h3>
             <button
               type="button"
               onClick={addStation}
@@ -368,43 +480,6 @@ function SubmitPage() {
             >
               駅を追加
             </button>
-          </div>
-
-          {/* CSV一括登録セクション */}
-          <div style={{ marginBottom: '2rem', padding: '1rem', border: '1px solid #ddd', borderRadius: '4px', width: '100%', boxSizing: 'border-box' }}>
-            <h4 style={{ marginTop: 0 }}>CSV形式で一括登録</h4>
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem' }}>
-                CSV形式で駅情報を入力:
-                <textarea
-                  value={csvInput}
-                  onChange={(e) => setCsvInput(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    marginTop: '0.5rem',
-                    minHeight: '100px',
-                    boxSizing: 'border-box'
-                  }}
-                  placeholder="駅名,時間 (HH:MM:SS)&#10;例:&#10;長町,00:00:00&#10;太子堂,00:01:15"
-                />
-              </label>
-              <button
-                type="button"
-                onClick={handleCsvSubmit}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#4caf50',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  marginTop: '0.5rem'
-                }}
-              >
-                一括登録
-              </button>
-            </div>
           </div>
 
           {stations.map((station, index) => (
@@ -487,9 +562,6 @@ function SubmitPage() {
                       style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box', backgroundColor: '#f5f5f5' }}
                     />
                   </label>
-                  <small style={{ display: 'block', color: '#666' }}>
-                    駅名を選択すると自動的に入力されます
-                  </small>
                 </div>
 
                 <div style={{ width: '100%', boxSizing: 'border-box' }}>
@@ -505,38 +577,6 @@ function SubmitPage() {
                       required
                     />
                   </label>
-                </div>
-
-                <div style={{ width: '100%', boxSizing: 'border-box' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', width: '100%' }}>
-                    緯度:
-                    <input
-                      type="text"
-                      name="lat"
-                      value={station.lat}
-                      readOnly
-                      style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box', backgroundColor: '#f5f5f5' }}
-                    />
-                  </label>
-                  <small style={{ display: 'block', color: '#666' }}>
-                    駅名を選択すると自動的に入力されます
-                  </small>
-                </div>
-
-                <div style={{ width: '100%', boxSizing: 'border-box' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', width: '100%' }}>
-                    経度:
-                    <input
-                      type="text"
-                      name="lon"
-                      value={station.lon}
-                      readOnly
-                      style={{ width: '100%', padding: '0.5rem', boxSizing: 'border-box', backgroundColor: '#f5f5f5' }}
-                    />
-                  </label>
-                  <small style={{ display: 'block', color: '#666' }}>
-                    駅名を選択すると自動的に入力されます
-                  </small>
                 </div>
               </div>
             </div>

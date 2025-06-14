@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteRailwayData, addStationMapping } from '../lib/supabase';
+import { deleteRailwayData } from '../lib/supabase';
 import { RailwayData } from '../types/RailwayData';
 import { createReport } from '../lib/reports';
 import { useAuth } from '../lib/auth';
 import { isAdmin } from './AdminPage';
 import { loadCSVData } from '../lib/csvData';
-import { StationInput } from '../components/StationInput';
 
 interface ListPageProps {
   railwayData: RailwayData[];
