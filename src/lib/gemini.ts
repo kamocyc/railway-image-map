@@ -4,7 +4,7 @@ const genAI = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY || '
 
 export async function processStationText(text: string): Promise<string> {
     try {
-        const prompt = `再生時間（到着時間、発車時間の優先順位）と駅名をCSV形式で出力してください。また、CSVのみを出力し、それ以外のテキストは出力しないでください。
+        const prompt = `再生時間（到着時間、発車時間の優先順位）と駅名をCSV形式で出力してください。駅名がローマ字の場合は日本語に変換してください。また、CSVのみを出力し、それ以外のテキストは出力しないでください。
 
 入力例:
 \`\`\`
@@ -16,7 +16,7 @@ export async function processStationText(text: string): Promise<string> {
 \`\`\`
 
 出力例:
-\`\`\`
+\`\`\`csv
 0:30,網走
 4:20,桂台
 1:44:40,知床斜里
