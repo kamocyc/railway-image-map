@@ -4,8 +4,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "type-check": "ts-node scripts/type-check.ts"
+    "start": "next start"
   },
   "dependencies": {
     "@google/genai": "^1.5.1",

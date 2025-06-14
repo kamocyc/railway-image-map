@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Header from '../components/Header'
-import ListPage from '../../src/pages/ListPage'
+import Header from '../../src/components/Header'
+import ListPage from './ListPage'
 import { RailwayVideo } from '../../src/types/RailwayData'
 import { getRailwayData } from '../../src/lib/supabase'
 

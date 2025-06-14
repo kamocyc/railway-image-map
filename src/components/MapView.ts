@@ -10,6 +10,20 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
   // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
   const map = L.map(elementId).setView([35.6812, 139.7671], 5);
 
+  // Fix for default marker icons
+  const defaultIcon = L.icon({
+    iconUrl: '/images/marker-icon.png',
+    iconRetinaUrl: '/images/marker-icon-2x.png',
+    shadowUrl: '/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  // Set default icon
+  L.Marker.prototype.options.icon = defaultIcon;
+
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);

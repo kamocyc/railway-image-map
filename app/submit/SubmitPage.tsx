@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/compat/router';
-import { addRailwayData } from '../lib/supabase';
-import { RailwayVideo, StationVideoTime } from '../types/RailwayData';
-import { useAuth } from '../lib/auth';
-import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../lib/csvData';
-import { processStationText } from '../lib/gemini';
+import { addRailwayData } from '../../src/lib/supabase';
+import { RailwayVideo, StationVideoTime } from '../../src/types/RailwayData';
+import { useAuth } from '../../src/lib/auth';
+import { loadCSVData, getLineSuggestions, getStationSuggestions, findLineByName, findStationByName } from '../../src/lib/csvData';
+import { processStationText } from '../../src/lib/gemini';
 
 function SubmitPage() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 'use client'
 
-import Header from '../components/Header'
-import SubmitPage from '../../src/pages/SubmitPage'
+import Header from '../../src/components/Header'
+import SubmitPage from './SubmitPage'
 
 export default function Submit() {
     return (

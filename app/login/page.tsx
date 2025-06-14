@@ -1,7 +1,7 @@
 'use client'
 
-import Header from '../components/Header'
-import LoginPage from '../../src/pages/LoginPage'
+import Header from '../../src/components/Header'
+import LoginPage from './LoginPage'
 
 export default function Login() {
     return (

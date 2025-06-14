@@ -1,10 +1,11 @@
-// import 'server-only';
+'use client';
+
 import { createClient } from '@supabase/supabase-js';
 import { RailwayVideo, StationVideoTime } from '../types/RailwayData';
 
 // Supabaseの環境変数
-const supabaseUrl = process.env.SUPABASE_URL || 'https://jdcgyekcofnzrbsvkafo.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpkY2d5ZWtjb2ZuenJic3ZrYWZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTA4NzQsImV4cCI6MjA2NTEyNjg3NH0.P5c7spqezGbBFRTz4Y3kL8Rre_YiyMCdQzvKLUeFTS8';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 // Supabaseクライアントの作成
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);

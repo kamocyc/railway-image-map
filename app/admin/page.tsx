@@ -1,7 +1,7 @@
 'use client'
 
-import Header from '../components/Header'
-import AdminPage from '../../src/pages/AdminPage'
+import Header from '../../src/components/Header'
+import AdminPage from './AdminPage'
 
 export default function Admin() {
     return (

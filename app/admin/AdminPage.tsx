@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/compat/router';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../lib/auth';
-import { StationMapping } from '../types/StationMapping';
-import { Report } from '../types/Report';
-import { updateReportStatus } from '../lib/reports';
+import { supabase } from '../../src/lib/supabase';
+import { useAuth } from '../../src/lib/auth';
+import { StationMapping } from '../../src/types/StationMapping';
+import { Report } from '../../src/types/Report';
+import { updateReportStatus } from '../../src/lib/reports';
 import camelcaseKeys from 'camelcase-keys';
 
 interface UserData {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { initializeMapWithRailwayData } from '../components/MapView';
-import { RailwayVideo } from '../types/RailwayData';
+import { initializeMapWithRailwayData } from '../src/components/MapView';
+import { RailwayVideo } from '../src/types/RailwayData';
 
 interface MapPageProps {
   loading: boolean;

@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/compat/router';
-import { deleteRailwayData, deleteRailwayLine } from '../lib/supabase';
-import { RailwayVideo } from '../types/RailwayData';
-import { createReport } from '../lib/reports';
-import { useAuth } from '../lib/auth';
-import { isAdmin } from './AdminPage';
-import { loadCSVData } from '../lib/csvData';
+import { deleteRailwayData, deleteRailwayLine } from '../../src/lib/supabase';
+import { RailwayVideo } from '../../src/types/RailwayData';
+import { createReport } from '../../src/lib/reports';
+import { useAuth } from '../../src/lib/auth';
+import { isAdmin } from '../../app/admin/AdminPage';
+import { loadCSVData } from '../../src/lib/csvData';
 
 interface ListPageProps {
   railwayData: RailwayVideo[];

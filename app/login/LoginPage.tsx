@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/compat/router';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../../src/lib/auth';
 
 function LoginPage() {
   const router = useRouter();
