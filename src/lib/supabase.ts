@@ -82,16 +82,38 @@ export async function addRailwayData(data: RailwayVideo) {
 
 // 鉄道データを削除
 export async function deleteRailwayData(id: number) {
-  const { error } = await supabase
-    .from('station_mappings')
-    .delete()
-    .eq('id', id);
+  try {
+    const { error } = await supabase
+      .from('station_mappings')
+      .delete()
+      .eq('id', id);
 
-  if (error) {
-    console.error('Error deleting railway data:', error);
-    return false;
+    if (error) {
+      console.error('Error deleting railway data:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error in deleteRailwayData:', error);
+    throw error;
   }
-  return true;
+}
+
+export async function deleteRailwayLine(videoId: string, lineCd: number) {
+  try {
+    const { error } = await supabase
+      .from('station_mappings')
+      .delete()
+      .eq('video_id', videoId)
+      .eq('line_cd', lineCd);
+
+    if (error) {
+      console.error('Error deleting railway line:', error);
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error in deleteRailwayLine:', error);
+    throw error;
+  }
 }
 
 export async function addStationMapping(mapping: {
