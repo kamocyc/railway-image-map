@@ -11,6 +11,23 @@ export function initializeMapWithRailwayData(
   railwayVideos: RailwayVideo[],
   L: typeof LType,
 ): L.Map {
+  let resizeTimer: NodeJS.Timeout | null = null;
+
+  const resizeObserver = new ResizeObserver(entries => {
+    // debounce
+    if (resizeTimer) {
+      clearTimeout(resizeTimer);
+    }
+    resizeTimer = setTimeout(() => {
+      for (let entry of entries) {
+        if (entry.target.id === elementId) {
+          map.invalidateSize();
+        }
+      }
+    }, 250);
+  });
+  resizeObserver.observe(document.getElementById(elementId)!);
+
   // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
   const map = L.map(elementId).setView([35.6812, 139.7671], 5);
 
