@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header />
-      <main style={{ flexGrow: 1, overflow: 'auto' }}>
+      <main style={{ flexGrow: 1, overflow: 'auto', padding: '0' }}>
         <MapPage loading={dataLoading} railwayData={railwayData} />
       </main>
     </div>

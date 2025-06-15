@@ -8,7 +8,6 @@ export default function Header() {
 
   return (
     <header style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
-      <h1>Railway Image Map</h1>
       <nav>
         <ul style={{ display: 'flex', gap: '1rem', listStyle: 'none', padding: 0 }}>
           <li><Link href="/">地図</Link></li>
