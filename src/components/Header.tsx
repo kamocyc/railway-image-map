@@ -7,7 +7,7 @@ export default function Header() {
   const { user } = useAuth()
 
   return (
-    <header style={{ padding: '1rem', borderBottom: '1px solid #eee' }}>
+    <header style={{ padding: '0.5rem', borderBottom: '1px solid #eee' }}>
       <nav>
         <ul style={{ display: 'flex', gap: '1rem', listStyle: 'none', padding: 0 }}>
           <li><Link href="/">地図</Link></li>

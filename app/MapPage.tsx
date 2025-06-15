@@ -68,20 +68,20 @@ function MapPage({ loading, railwayData }: MapPageProps) {
         <>
           <div style={{
             position: 'absolute',
-            top: '10px',
-            right: '10px',
+            top: '4px',
+            right: '4px',
             zIndex: 1000,
             display: 'flex',
             gap: '0.5rem',
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            padding: '0.5rem',
+            padding: '0.2rem',
             borderRadius: '4px',
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
           }}>
             <button
               onClick={() => setLayout('vertical')}
               style={{
-                padding: '0.25rem 0.5rem',
+                padding: '0.15rem 0.25rem',
                 backgroundColor: layout === 'vertical' ? '#4CAF50' : '#f0f0f0',
                 color: layout === 'vertical' ? 'white' : 'black',
                 border: 'none',
@@ -95,7 +95,7 @@ function MapPage({ loading, railwayData }: MapPageProps) {
             <button
               onClick={() => setLayout('horizontal')}
               style={{
-                padding: '0.25rem 0.5rem',
+                padding: '0.15rem 0.25rem',
                 backgroundColor: layout === 'horizontal' ? '#4CAF50' : '#f0f0f0',
                 color: layout === 'horizontal' ? 'white' : 'black',
                 border: 'none',
