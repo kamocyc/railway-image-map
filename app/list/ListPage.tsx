@@ -87,7 +87,7 @@ function ListPage({ railwayData, loading }: ListPageProps) {
     }
   };
 
-  const handleDeleteLine = async (videoId: string, lineCd: number) => {
+  const handleDeleteLine = async (videoId: string, lineCd: string) => {
     if (!window.confirm('この路線の全ての駅データを削除しますか？')) {
       return;
     }

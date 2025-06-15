@@ -5,13 +5,17 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
 export async function processStationText(text: string): Promise<string> {
     try {
-        const prompt = `再生時間（到着時間、発車時間の優先順位）と駅名をCSV形式で出力してください。駅名がローマ字の場合は日本語に変換してください。また、CSVのみを出力し、それ以外のテキストは出力しないでください。
+        const prompt = `再生時間（到着時間、なければ発車時間）と駅名（信号場ではなく駅）をCSV形式で出力してください。駅名がローマ字の場合は日本語に変換してください。また、CSVデータのみを出力し、それ以外のテキストは出力しないでください。
 
 入力例:
 \`\`\`
 0:00 オープニング
 0:30 - 1:10 網走駅(A69) 始発
 4:20 桂台駅(B79)
+5:00 新城信号場
+13:30 仁保駅
+13:35 仁保北駅 到着
+13:57 仁保北駅 発車
 1:44:40 - 48:10 知床斜里
 3:16:05 釧路 終着
 \`\`\`
@@ -20,6 +24,8 @@ export async function processStationText(text: string): Promise<string> {
 \`\`\`csv
 0:30,網走
 4:20,桂台
+13:30,仁保
+13:35,仁保北
 1:44:40,知床斜里
 3:16:05,釧路
 \`\`\`

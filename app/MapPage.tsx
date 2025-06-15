@@ -13,7 +13,7 @@ type LayoutType = 'vertical' | 'horizontal';
 
 function MapPage({ loading, railwayData, showControls }: MapPageProps) {
   const mapRef = useRef<L.Map | null>(null);
-  const mapInitializedRef = useRef<boolean>(false); // マップが初期化されたかどうかを追跡
+  const mapInitializedRef = useRef<boolean>(false);
   const [layout, setLayout_] = useState<LayoutType>('vertical');
   const mapDivRef = useRef<HTMLDivElement>(null);
   const youtubePlayerContainerDivRef = useRef<HTMLDivElement>(null);
@@ -46,7 +46,11 @@ function MapPage({ loading, railwayData, showControls }: MapPageProps) {
         mapRef.current = null;
       }
 
-      mapRef.current = initializeMapWithRailwayData('map', railwayData, L);
+      mapRef.current = initializeMapWithRailwayData(
+        'map',
+        railwayData,
+        L,
+      );
 
       mapInitializedRef.current = true;
     });

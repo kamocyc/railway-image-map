@@ -12,7 +12,7 @@ export interface RailwayVideo {
   id?: number;
   videoId: string;
   lineName: string;
-  lineCd: number;
+  lineCd: string;
   stations: StationVideoTime[];
   userId?: string;
 }

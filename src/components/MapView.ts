@@ -2,10 +2,15 @@ import type LType from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/markers.css';
 import { RailwayVideo } from '../types/RailwayData';
+import { StationVideoTime } from '../types/RailwayData';
 import { YouTubePlayer } from '../youtube/YouTubePlayer';
 
 // マップを初期化し、駅マーカーを追加する関数
-export function initializeMapWithRailwayData(elementId: string, railwayVideos: RailwayVideo[], L: typeof LType): L.Map {
+export function initializeMapWithRailwayData(
+  elementId: string,
+  railwayVideos: RailwayVideo[],
+  L: typeof LType,
+): L.Map {
   // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
   const map = L.map(elementId).setView([35.6812, 139.7671], 5);
 
@@ -27,29 +32,105 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  const firstPosition = railwayVideos[0]?.stations[0];
-  const youtubePlayer = YouTubePlayer.getInstance('youtube-player', railwayVideos[0].videoId, firstPosition.startTime);
+  const firstStation = railwayVideos[0]?.stations[0];
+  const youtubePlayer = YouTubePlayer.getInstance('youtube-player', railwayVideos[0].videoId, firstStation.startTime);
 
   // 駅マーカーを保持するオブジェクト
   const stationMarkers: { [key: string]: L.Marker[] } = {};
+  let selectedVideoIdAndLineCd: null | string = null;
+
+  // マップのクリックイベントを追加
+  map.on('click', (e) => {
+    const clickedLatLng = e.latlng;
+    const threshold = 100; // meters
+
+    let closestStation: {
+      station: StationVideoTime;
+      distance: number;
+      railwayVideo: RailwayVideo;
+    } | null = null;
+
+    // すべての路線と駅をチェックして最も近い駅を見つける
+    // TODO: これだと、駅が多いと重いので、インデックスとかで高速化するあるいはoverpass-apiを使う
+    for (const railwayVideo of railwayVideos) {
+      for (const station of railwayVideo.stations) {
+        const stationLatLng = L.latLng(station.lat, station.lon);
+        const distance = clickedLatLng.distanceTo(stationLatLng);
+
+        if (distance < threshold && (!closestStation || distance < closestStation.distance)) {
+          closestStation = {
+            station,
+            distance,
+            railwayVideo
+          };
+        }
+      }
+    }
+
+    // 最も近い駅が見つかった場合
+    if (closestStation) {
+      // すべての駅マーカーを非表示
+      Object.values(stationMarkers).forEach(markers => {
+        markers.forEach(marker => marker.remove());
+      });
+
+      // 最も近い駅の路線の駅マーカーを表示
+      const key = closestStation.railwayVideo.videoId + '-' + closestStation.railwayVideo.lineCd;
+      stationMarkers[key].forEach(marker => marker.addTo(map));
+
+      selectedVideoIdAndLineCd = key;
+
+      // 動画を再生
+      youtubePlayer.loadVideo(closestStation.railwayVideo.videoId, closestStation.station.startTime);
+    } else {
+
+      if (selectedVideoIdAndLineCd) {
+        const [videoId, lineCd] = selectedVideoIdAndLineCd.split('-');
+        const selectedRailway = railwayVideos.find(r => r.videoId === videoId && r.lineCd === lineCd);
+
+        if (selectedRailway) {
+          // クリック位置に最も近い2つの駅を見つける
+          let closestStations = selectedRailway.stations
+            .map(station => ({
+              station,
+              distance: clickedLatLng.distanceTo(L.latLng(station.lat, station.lon))
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .slice(0, 2);
+
+          if (closestStations.length === 2) {
+            const [station1, station2] = closestStations;
+            const totalDistance = station1.distance + station2.distance;
+            const ratio = station1.distance / totalDistance;
+
+            // 2つの駅の間の時間を等分して計算
+            // 駅の停車時間がある場合に不正確になるが、データが整っていないのであきらめる
+            const timeDiff = station2.station.startTime - station1.station.startTime;
+            const interpolatedTime = station1.station.startTime + (timeDiff * ratio);
+
+            // 動画を再生
+            youtubePlayer.loadVideo(selectedRailway.videoId, Math.round(interpolatedTime));
+          }
+        }
+      }
+    }
+  });
 
   railwayVideos.forEach(railwayVideo => {
-    // 路線の中心位置を計算
-    const latSum = railwayVideo.stations.reduce((sum, station) => sum + station.lat, 0);
-    const lngSum = railwayVideo.stations.reduce((sum, station) => sum + station.lon, 0);
-    const centerLat = latSum / railwayVideo.stations.length;
-    const centerLng = lngSum / railwayVideo.stations.length;
+    const firstStation = railwayVideo.stations[0];
+
+    // 路線の最初の駅の位置を計算
+    const railwayLat = firstStation.lat;
+    const railwayLng = firstStation.lon;
 
     // 路線マーカーの作成
-    const railwayMarker = L.marker([centerLat, centerLng], {
+    const railwayMarker = L.marker([railwayLat, railwayLng], {
       icon: L.divIcon({
         className: 'railway-marker',
         html: `<div class="railway-marker-icon">${railwayVideo.lineName}</div>`,
         iconSize: [100, 30]
       })
     }).addTo(map);
-
-    const firstStation = railwayVideo.stations[0];
 
     // 路線マーカーのポップアップ
     railwayMarker.bindPopup(`
@@ -87,9 +168,12 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
 
       // クリックされた路線の駅マーカーを表示
       stationMarkers[railwayVideo.videoId + '-' + railwayVideo.lineCd].forEach(marker => marker.addTo(map));
+
+      selectedVideoIdAndLineCd = railwayVideo.videoId + '-' + railwayVideo.lineCd;
     });
   });
 
+  // 動画再生
   map.on('popupopen', (e) => {
     const popup = e.popup;
     const playButton = popup.getElement()?.querySelector('.play-button');

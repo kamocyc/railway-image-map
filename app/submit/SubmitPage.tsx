@@ -244,7 +244,7 @@ function SubmitPage() {
       const newMapping: RailwayVideo = {
         videoId: railwayData.videoId,
         lineName: railwayData.lineName,
-        lineCd: parseInt(railwayData.lineCd, 10),
+        lineCd: railwayData.lineCd,
         stations: validatedStations,
         userId: user?.id,
       };

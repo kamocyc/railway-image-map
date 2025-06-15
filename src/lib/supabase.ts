@@ -100,7 +100,7 @@ export async function deleteRailwayData(id: number) {
   }
 }
 
-export async function deleteRailwayLine(videoId: string, lineCd: number) {
+export async function deleteRailwayLine(videoId: string, lineCd: string) {
   try {
     const { error } = await supabase
       .from('station_mappings')
