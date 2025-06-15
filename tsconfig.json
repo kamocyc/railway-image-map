@@ -37,9 +37,10 @@
     }
   },
   "include": [
-    "src",
+    "./dist/types/**/*.ts",
     "app",
-    "./dist/types/**/*.ts"
+    "src",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

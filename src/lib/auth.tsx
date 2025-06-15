@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import React from 'react';
 import { supabase } from './supabase';
 import { Session, User } from '@supabase/supabase-js';
+import { login } from './actions';
 
 type AuthContextType = {
   session: Session | null;
@@ -44,7 +45,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // サインイン
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error };
+    if (error) {
+      return { error };
+    }
+    // クッキーの設定のために、サーバ側でログイン処理を行う（本当はこっちだけにしたいけど、直すのが面倒）
+    const { error: loginError } = await login({ email, password });
+    return { error: loginError };
   };
 
   // サインアップ

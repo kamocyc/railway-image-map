@@ -40,31 +40,13 @@ npm install
 
 3. 環境変数の設定
 
-`.env.example` ファイルを `.env` にコピーし、Supabaseの接続情報を設定します。
+`.env.local.example` ファイルを `.env.local` にコピーし、supabaseの接続情報を設定します。
 
-```
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_ANON_KEY=your_supabase_anon_key_here
-GEMINI_API_KEY=your_gemini_api_key
-```
+`.env.example` ファイルを `.env` にコピーし、geminiのAPIキーを設定します。（駅と時間の一覧の整形のみに使用）
 
 4. Supabaseのセットアップ
 
-Supabaseダッシュボードで以下のテーブルを作成します：
-
-```sql
-CREATE TABLE station_mappings (
-  id SERIAL PRIMARY KEY,
-  station_cd INTEGER NOT NULL,
-  station_name TEXT NOT NULL,
-  video_id TEXT NOT NULL,
-  start_time INTEGER NOT NULL,
-  lat FLOAT NOT NULL,
-  lon FLOAT NOT NULL,
-  user_id UUID REFERENCES auth.users,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
+Supabaseダッシュボードで、supabase/schema.sqlを実行します。
 
 5. 開発サーバーの起動
 
