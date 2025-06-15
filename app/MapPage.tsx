@@ -6,11 +6,12 @@ import Split from 'react-split';
 interface MapPageProps {
   loading: boolean;
   railwayData: RailwayVideo[];
+  showControls: boolean;
 }
 
 type LayoutType = 'vertical' | 'horizontal';
 
-function MapPage({ loading, railwayData }: MapPageProps) {
+function MapPage({ loading, railwayData, showControls }: MapPageProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapInitializedRef = useRef<boolean>(false); // マップが初期化されたかどうかを追跡
   const [layout, setLayout_] = useState<LayoutType>('vertical');
@@ -66,47 +67,49 @@ function MapPage({ loading, railwayData }: MapPageProps) {
         <div style={{ padding: '2rem', textAlign: 'center' }}>地図データを読み込み中...</div>
       ) : (
         <>
-          <div style={{
-            position: 'absolute',
-            top: '4px',
-            right: '4px',
-            zIndex: 1000,
-            display: 'flex',
-            gap: '0.5rem',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            padding: '0.2rem',
-            borderRadius: '4px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            <button
-              onClick={() => setLayout('vertical')}
-              style={{
-                padding: '0.15rem 0.25rem',
-                backgroundColor: layout === 'vertical' ? '#4CAF50' : '#f0f0f0',
-                color: layout === 'vertical' ? 'white' : 'black',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              上下
-            </button>
-            <button
-              onClick={() => setLayout('horizontal')}
-              style={{
-                padding: '0.15rem 0.25rem',
-                backgroundColor: layout === 'horizontal' ? '#4CAF50' : '#f0f0f0',
-                color: layout === 'horizontal' ? 'white' : 'black',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '0.9rem'
-              }}
-            >
-              左右
-            </button>
-          </div>
+          {showControls &&
+            <div style={{
+              position: 'absolute',
+              top: '4px',
+              right: '2rem',
+              zIndex: 1000,
+              display: 'flex',
+              gap: '0.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              padding: '0.2rem',
+              borderRadius: '4px',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}>
+              <button
+                onClick={() => setLayout('vertical')}
+                style={{
+                  padding: '0.15rem 0.25rem',
+                  backgroundColor: layout === 'vertical' ? '#4CAF50' : '#f0f0f0',
+                  color: layout === 'vertical' ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                上下
+              </button>
+              <button
+                onClick={() => setLayout('horizontal')}
+                style={{
+                  padding: '0.15rem 0.25rem',
+                  backgroundColor: layout === 'horizontal' ? '#4CAF50' : '#f0f0f0',
+                  color: layout === 'horizontal' ? 'white' : 'black',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+              >
+                左右
+              </button>
+            </div>
+          }
           <Split
             direction={layout}
             sizes={[50, 50]}

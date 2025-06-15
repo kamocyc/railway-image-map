@@ -6,7 +6,6 @@ import { YouTubePlayer } from '../youtube/YouTubePlayer';
 
 // マップを初期化し、駅マーカーを追加する関数
 export function initializeMapWithRailwayData(elementId: string, railwayVideos: RailwayVideo[], L: typeof LType): L.Map {
-  const firstPosition = railwayVideos[0]?.stations[0];
   // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
   const map = L.map(elementId).setView([35.6812, 139.7671], 5);
 
@@ -28,6 +27,7 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+  const firstPosition = railwayVideos[0]?.stations[0];
   const youtubePlayer = YouTubePlayer.getInstance('youtube-player', railwayVideos[0].videoId, firstPosition.startTime);
 
   // 駅マーカーを保持するオブジェクト
@@ -49,11 +49,14 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
       })
     }).addTo(map);
 
+    const firstStation = railwayVideo.stations[0];
+
     // 路線マーカーのポップアップ
     railwayMarker.bindPopup(`
       <b>${railwayVideo.lineName}</b><br>
       路線コード: ${railwayVideo.lineCd}<br>
-      ビデオID: ${railwayVideo.videoId}
+      ビデオID: ${railwayVideo.videoId}<br>
+      <button class="play-button" data-video-id="${railwayVideo.videoId}" data-start-time="${firstStation.startTime}">動画を再生</button>
     `);
 
     // 駅マーカーの作成と保存
@@ -73,7 +76,7 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
 
       markers.push(marker);
     });
-    stationMarkers[railwayVideo.videoId] = markers;
+    stationMarkers[railwayVideo.videoId + '-' + railwayVideo.lineCd] = markers;
 
     // 路線マーカーのクリックイベント
     railwayMarker.on('click', () => {
@@ -83,7 +86,7 @@ export function initializeMapWithRailwayData(elementId: string, railwayVideos: R
       });
 
       // クリックされた路線の駅マーカーを表示
-      stationMarkers[railwayVideo.videoId].forEach(marker => marker.addTo(map));
+      stationMarkers[railwayVideo.videoId + '-' + railwayVideo.lineCd].forEach(marker => marker.addTo(map));
     });
   });
 

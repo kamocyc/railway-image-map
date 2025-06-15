@@ -158,32 +158,6 @@ function AdminPage() {
       setReports(formattedReports);
     } catch (err) {
       console.error('Failed to fetch reports:', err);
-
-      // 開発用のダミーデータ
-      setReports([
-        {
-          id: '1',
-          mappingId: 1,
-          reporterId: '1',
-          reporterEmail: 'user1@example.com',
-          reason: '不適切な内容です',
-          status: 'pending',
-          createdAt: '2023-01-01T00:00:00Z',
-          stationMapping: {
-            id: 1,
-            stationCd: 1123142,
-            stationName: '長町',
-            lineName: '東北本線',
-            lineCd: 12345,
-            videoId: 'zBtJUyfPh5E',
-            startTime: 0,
-            lat: 38.226797,
-            lon: 140.885986,
-            userId: '2',
-            createdAt: '2023-01-01T00:00:00Z'
-          }
-        }
-      ]);
     } finally {
       setLoadingReports(false);
     }
@@ -219,23 +193,6 @@ function AdminPage() {
       setUserMappings(camelcaseKeys(data) || []);
     } catch (err) {
       console.error('Failed to fetch user mappings:', err);
-
-      // 開発用のダミーデータ
-      setUserMappings([
-        {
-          id: 1,
-          stationCd: 1123142,
-          stationName: '長町',
-          lineName: '東北本線',
-          lineCd: 12345,
-          videoId: 'zBtJUyfPh5E',
-          startTime: 0,
-          lat: 38.226797,
-          lon: 140.885986,
-          userId: userId,
-          createdAt: '2023-01-01T00:00:00Z'
-        }
-      ]);
     } finally {
       setLoadingMappings(false);
     }

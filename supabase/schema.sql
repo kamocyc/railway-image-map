@@ -63,3 +63,9 @@ CREATE POLICY "Users can delete their own mappings"
 
 -- admin_usersテーブルのポリシー
 ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+
+-- 自分のユーザIDのadmin_usersは閲覧可能
+CREATE POLICY "Users can view their own admin_users" 
+  ON admin_users FOR SELECT USING (
+    auth.uid() = user_id
+  );
