@@ -14,7 +14,7 @@ type LayoutType = 'vertical' | 'horizontal';
 function MapPage({ loading, railwayData, showControls }: MapPageProps) {
   const mapRef = useRef<L.Map | null>(null);
   const mapInitializedRef = useRef<boolean>(false);
-  const [layout, setLayout_] = useState<LayoutType>('vertical');
+  const [layout, setLayout_] = useState<LayoutType>('horizontal');
   const mapDivRef = useRef<HTMLDivElement>(null);
   const youtubePlayerContainerDivRef = useRef<HTMLDivElement>(null);
 

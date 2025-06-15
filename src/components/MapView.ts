@@ -169,8 +169,11 @@ export function initializeMapWithRailwayData(
         駅コード: ${station.stationCd}<br>
         ビデオID: ${railwayVideo.videoId}<br>
         開始時間: ${station.startTime}秒<br>
-        <button class="play-button" data-video-id="${railwayVideo.videoId}" data-start-time="${station.startTime}">動画を再生</button>
       `);
+
+      marker.on('click', () => {
+        youtubePlayer.loadVideo(railwayVideo.videoId, station.startTime);
+      });
 
       markers.push(marker);
     });
