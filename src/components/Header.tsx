@@ -27,6 +27,7 @@ export default function Header({ showControls, setShowControls }: { showControls
             )}
             <li><Link href="/login">ログイン</Link></li>
             <li><a style={{ color: 'gray', fontSize: '0.8rem' }} href="/licenses.json">OSS License</a></li>
+            <li><span style={{ color: 'gray', fontSize: '0.8rem' }}><a href="https://ekidata.jp/">駅データ</a>を使用しています</span></li>
           </ul>
         </nav>
       </header>

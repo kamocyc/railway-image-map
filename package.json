@@ -5,7 +5,7 @@
     "dev": "next dev",
     "build": "npm run dep:gen && next build",
     "start": "next start",
-    "dep:gen": "license-report --only=prod --output=json > licenses.json"
+    "dep:gen": "license-report --only=prod --output=json > ./public/licenses.json"
   },
   "dependencies": {
     "@google/genai": "^1.5.1",
