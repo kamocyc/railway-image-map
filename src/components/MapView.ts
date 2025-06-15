@@ -11,6 +11,9 @@ export function initializeMapWithRailwayData(
   railwayVideos: RailwayVideo[],
   L: typeof LType,
 ): L.Map {
+  // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
+  const map = L.map(elementId).setView([35.6812, 139.7671], 5);
+
   let resizeTimer: NodeJS.Timeout | null = null;
 
   const resizeObserver = new ResizeObserver(entries => {
@@ -27,9 +30,6 @@ export function initializeMapWithRailwayData(
     }, 250);
   });
   resizeObserver.observe(document.getElementById(elementId)!);
-
-  // 日本の中心付近の座標（東京）と、日本全体が表示されるズームレベル（5）を設定
-  const map = L.map(elementId).setView([35.6812, 139.7671], 5);
 
   // Fix for default marker icons
   const defaultIcon = L.icon({
@@ -133,12 +133,23 @@ export function initializeMapWithRailwayData(
     }
   });
 
+  const railwayMarkerPositions: { [key: string]: { lat: number, lng: number } } = {};
+
   railwayVideos.forEach(railwayVideo => {
     const firstStation = railwayVideo.stations[0];
 
     // 路線の最初の駅の位置を計算
-    const railwayLat = firstStation.lat;
-    const railwayLng = firstStation.lon;
+    let railwayLat = firstStation.lat;
+    let railwayLng = firstStation.lon;
+
+    // 既存の路線マーカーと重なる場合は、このマーカーの位置をずらす
+    const nearRailwayMarkerPositions = Object.values(railwayMarkerPositions).filter(position => position.lat === railwayLat && position.lng === railwayLng);
+    if (nearRailwayMarkerPositions.length > 0) {
+      railwayLat += 0.005;
+      railwayLng += 0.02;
+    }
+
+    railwayMarkerPositions[railwayVideo.videoId + '-' + railwayVideo.lineCd] = { lat: railwayLat, lng: railwayLng };
 
     // 路線マーカーの作成
     const railwayMarker = L.marker([railwayLat, railwayLng], {

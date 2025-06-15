@@ -267,13 +267,6 @@ function SubmitPage() {
           lon: '',
         }]);
         setCsvInput('');
-
-        // 3秒後に地図ページに遷移
-        setTimeout(() => {
-          if (router) {
-            router.push('/');
-          }
-        }, 3000);
       } else {
         throw new Error('データの保存に失敗しました');
       }
@@ -321,7 +314,7 @@ function SubmitPage() {
 
       {success && (
         <div style={{ padding: '1rem', backgroundColor: '#e8f5e9', color: '#2e7d32', marginBottom: '1rem', borderRadius: '4px' }}>
-          マッピングが正常に保存されました！地図ページに戻ります...
+          マッピングが正常に保存されました！
         </div>
       )}
 
@@ -591,34 +584,16 @@ function SubmitPage() {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
           <button
-            type="button"
-            onClick={() => {
-              if (router) {
-                router.push('/');
-              }
-            }}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#9e9e9e',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            キャンセル
-          </button>
-          <button
             type="submit"
-            disabled={loading || success}
+            disabled={loading}
             style={{
               padding: '0.75rem 1.5rem',
               backgroundColor: '#4caf50',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: loading || success ? 'not-allowed' : 'pointer',
-              opacity: loading || success ? 0.7 : 1
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.7 : 1
             }}
           >
             {loading ? '保存中...' : '保存'}
