@@ -26,6 +26,7 @@ export default function Header({ showControls, setShowControls }: { showControls
               <></>
             )}
             <li><Link href="/login">ログイン</Link></li>
+            <li><a style={{ color: 'gray', fontSize: '0.8rem' }} href="/licenses.json">OSS License</a></li>
           </ul>
         </nav>
       </header>
